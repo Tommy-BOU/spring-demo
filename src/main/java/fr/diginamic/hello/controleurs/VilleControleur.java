@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * Controleur des {@link Ville}
+ */
 @RestController
 @RequestMapping("/villes")
 public class VilleControleur {
@@ -15,6 +18,7 @@ public class VilleControleur {
 
     /**
      * Retourne la liste des {@link Ville}
+     *
      * @return ArrayList<Ville>
      */
     @GetMapping
@@ -44,6 +48,7 @@ public class VilleControleur {
 
     /**
      * Retourne une ville selon son id
+     *
      * @param id L'identifiant de la ville
      * @return La {@link Ville} ou un message d'erreur
      */
@@ -60,11 +65,15 @@ public class VilleControleur {
 
     /**
      * Ajoute une ville dans la liste
+     *
      * @param newVille La ville ajoutée
      * @return ResponseEntity contenant la {@link Ville} ajoutée ou un message d'erreur
      */
     @PostMapping
     public ResponseEntity<?> ajouterVille(@RequestBody Ville newVille) {
+        if (!valuesAreValid(newVille)) {
+            return ResponseEntity.badRequest().body("La ville n'a pas pu étre ajoutée (valeurs invalides)");
+        }
         for (Ville ville : this.villes) {
             if (ville.getNom().equalsIgnoreCase(newVille.getNom())) {
                 return ResponseEntity.badRequest().body("La ville existe deja");
@@ -80,12 +89,16 @@ public class VilleControleur {
 
     /**
      * Modifie une {@link Ville} de la liste par son identifiant
-     * @param id L'identifiant de la {@link Ville} à modifier
+     *
+     * @param id   L'identifiant de la {@link Ville} à modifier
      * @param data La {@link Ville} modifiée
      * @return ResponseEntity contenant la {@link Ville} modifiée ou un message d'erreur
      */
     @PutMapping(path = "/{id}")
     public ResponseEntity<?> modifierVille(@PathVariable int id, @RequestBody Ville data) {
+        if (!valuesAreValid(data)) {
+            return ResponseEntity.badRequest().body("La ville n'a pas pu etre modifiee (valeurs invalides)");
+        }
         for (Ville ville : this.villes) {
             if (ville.getId() == id) {
                 ville.setNom(data.getNom());
@@ -93,27 +106,33 @@ public class VilleControleur {
                 return ResponseEntity.ok(ville);
             }
         }
-        return ResponseEntity.badRequest().body("La ville n'a pas pu etre modifiee");
-    }
+            return ResponseEntity.badRequest().body("La ville n'a pas pu etre modifiee");
 
-    /**
-     * Supprime une {@link Ville} de la liste par son identifiant.
-     *
-     * @param id L'identifiant de la {@link Ville} à supprimer
-     * @return ResponseEntity contenant la {@link Ville} supprimée ou un message d'erreur
-     */
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> supprimerVille(@PathVariable int id) {
-        Iterator<Ville> iterator = this.villes.iterator();
-        while (iterator.hasNext()) {
-            Ville ville = iterator.next();
-            if (ville.getId() == id) {
-                iterator.remove();
-                return ResponseEntity.ok("La ville a ete supprimee avec succès");
-            }
         }
 
-        return ResponseEntity.badRequest().body("La ville n'a pas pû être supprimée");
-    }
+        /**
+         * Supprime une {@link Ville} de la liste par son identifiant.
+         *
+         * @param id L'identifiant de la {@link Ville} à supprimer
+         * @return ResponseEntity contenant la {@link Ville} supprimée ou un message d'erreur
+         */
+        @DeleteMapping(path = "/{id}")
+        public ResponseEntity<?> supprimerVille ( @PathVariable int id){
+            Iterator<Ville> iterator = this.villes.iterator();
+            while (iterator.hasNext()) {
+                Ville ville = iterator.next();
+                if (ville.getId() == id) {
+                    iterator.remove();
+                    return ResponseEntity.ok("La ville a ete supprimee avec succès");
+                }
+            }
 
-}
+            return ResponseEntity.badRequest().body("La ville n'a pas pû être supprimée");
+        }
+
+        public boolean valuesAreValid (Ville ville){
+            return ville.getId() >= 0 && ville.getNom() != null && ville.getNom().length() >= 2 && ville.getNbHabitants() >= 1;
+        }
+
+
+    }
