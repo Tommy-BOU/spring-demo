@@ -14,6 +14,10 @@ public class VilleControleur {
 
     @GetMapping
     public List<Ville> getVilles() {
+
+        if (this.villes != null) {
+            return this.villes;
+        }
         List<Ville> villes = new java.util.ArrayList<>();
 
         Ville ville0 = new Ville("Paris", 1000000);
