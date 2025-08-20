@@ -4,21 +4,21 @@ import fr.diginamic.hello.beans.Ville;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/villes")
 public class VilleControleur {
 
-    private List<Ville> villes;
+    private ArrayList<Ville> villes;
 
     @GetMapping
-    public List<Ville> getVilles() {
+    public ArrayList<Ville> getVilles() {
 
         if (this.villes != null) {
             return this.villes;
         }
-        List<Ville> villes = new java.util.ArrayList<>();
+        ArrayList<Ville> villes = new ArrayList<>();
 
         Ville ville0 = new Ville("Paris", 1000000);
         ville0.setId(0);
@@ -50,7 +50,7 @@ public class VilleControleur {
 
     @PostMapping
     public ResponseEntity<?> ajouterVille(@RequestBody Ville newVille) {
-        for (Ville ville : getVilles()) {
+        for (Ville ville : this.villes) {
             if (ville.getNom().equals(newVille.getNom())) {
                 return ResponseEntity.badRequest().body("La ville existe deja");
             }
@@ -61,5 +61,28 @@ public class VilleControleur {
         this.villes.add(ville);
 
         return ResponseEntity.ok(ville);
+    }
+
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<?> modifierVille(@PathVariable int id, @RequestBody Ville data) {
+        for (Ville ville : this.villes) {
+            if (ville.getId() == id) {
+                ville.setNom(data.getNom());
+                ville.setNbHabitants(data.getNbHabitants());
+                return ResponseEntity.ok(ville);
+            }
+        }
+        return ResponseEntity.badRequest().body("La ville n'a pas pu etre modifiee");
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<?> supprimerVille(@PathVariable int id) {
+        for (Ville ville : this.villes) {
+            if (ville.getId() == id) {
+                this.villes.remove(ville);
+                return ResponseEntity.ok(ville);
+            }
+        }
+        return ResponseEntity.badRequest().body("La ville n'a pas pû être supprimée");
     }
 }
