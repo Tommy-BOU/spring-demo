@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 @RestController
 @RequestMapping("/villes")
@@ -65,7 +66,7 @@ public class VilleControleur {
     @PostMapping
     public ResponseEntity<?> ajouterVille(@RequestBody Ville newVille) {
         for (Ville ville : this.villes) {
-            if (ville.getNom().equals(newVille.getNom())) {
+            if (ville.getNom().equalsIgnoreCase(newVille.getNom())) {
                 return ResponseEntity.badRequest().body("La ville existe deja");
             }
         }
@@ -103,12 +104,15 @@ public class VilleControleur {
      */
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<?> supprimerVille(@PathVariable int id) {
-        for (Ville ville : this.villes) {
+        Iterator<Ville> iterator = this.villes.iterator();
+        while (iterator.hasNext()) {
+            Ville ville = iterator.next();
             if (ville.getId() == id) {
-                this.villes.remove(ville);
-                return ResponseEntity.ok(ville);
+                iterator.remove();
+                return ResponseEntity.ok("La ville a ete supprimee avec succès");
             }
         }
+
         return ResponseEntity.badRequest().body("La ville n'a pas pû être supprimée");
     }
 
