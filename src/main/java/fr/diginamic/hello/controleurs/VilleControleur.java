@@ -130,7 +130,12 @@ public class VilleControleur {
             return ResponseEntity.badRequest().body("La ville n'a pas pû être supprimée");
         }
 
-        public boolean valuesAreValid (Ville ville){
+    /**
+     * Vérifie les valeurs de la {@link Ville}
+     * @param ville
+     * @return true si les valeurs sont valides, false sinon
+     */
+    public boolean valuesAreValid (Ville ville){
             return ville.getId() >= 0 && ville.getNom() != null && ville.getNom().length() >= 2 && ville.getNbHabitants() >= 1;
         }
 
