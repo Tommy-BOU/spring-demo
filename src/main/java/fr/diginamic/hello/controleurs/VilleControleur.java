@@ -12,6 +12,10 @@ public class VilleControleur {
 
     private ArrayList<Ville> villes;
 
+    /**
+     * Retourne la liste des {@link Ville}
+     * @return ArrayList<Ville>
+     */
     @GetMapping
     public ArrayList<Ville> getVilles() {
 
@@ -37,6 +41,11 @@ public class VilleControleur {
         return this.villes;
     }
 
+    /**
+     * Retourne une ville selon son id
+     * @param id L'identifiant de la ville
+     * @return La {@link Ville} ou un message d'erreur
+     */
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> getVille(@PathVariable int id) {
 
@@ -48,6 +57,11 @@ public class VilleControleur {
         return ResponseEntity.badRequest().body("La ressource n'a pas été trouvée");
     }
 
+    /**
+     * Ajoute une ville dans la liste
+     * @param newVille La ville ajoutée
+     * @return ResponseEntity contenant la {@link Ville} ajoutée ou un message d'erreur
+     */
     @PostMapping
     public ResponseEntity<?> ajouterVille(@RequestBody Ville newVille) {
         for (Ville ville : this.villes) {
@@ -63,6 +77,12 @@ public class VilleControleur {
         return ResponseEntity.ok(ville);
     }
 
+    /**
+     * Modifie une {@link Ville} de la liste par son identifiant
+     * @param id L'identifiant de la {@link Ville} à modifier
+     * @param data La {@link Ville} modifiée
+     * @return ResponseEntity contenant la {@link Ville} modifiée ou un message d'erreur
+     */
     @PutMapping(path = "/{id}")
     public ResponseEntity<?> modifierVille(@PathVariable int id, @RequestBody Ville data) {
         for (Ville ville : this.villes) {
@@ -75,6 +95,12 @@ public class VilleControleur {
         return ResponseEntity.badRequest().body("La ville n'a pas pu etre modifiee");
     }
 
+    /**
+     * Supprime une {@link Ville} de la liste par son identifiant.
+     *
+     * @param id L'identifiant de la {@link Ville} à supprimer
+     * @return ResponseEntity contenant la {@link Ville} supprimée ou un message d'erreur
+     */
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<?> supprimerVille(@PathVariable int id) {
         for (Ville ville : this.villes) {
@@ -85,4 +111,5 @@ public class VilleControleur {
         }
         return ResponseEntity.badRequest().body("La ville n'a pas pû être supprimée");
     }
+
 }
