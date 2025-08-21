@@ -1,11 +1,19 @@
 package fr.diginamic.hello.controleurs;
 
 import fr.diginamic.hello.beans.Ville;
+import jakarta.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Controleur des {@link Ville}
@@ -13,6 +21,9 @@ import java.util.Iterator;
 @RestController
 @RequestMapping("/villes")
 public class VilleControleur {
+
+    @Autowired
+    private Validator validator;
 
     private ArrayList<Ville> villes;
 
@@ -70,10 +81,17 @@ public class VilleControleur {
      * @return ResponseEntity contenant la {@link Ville} ajoutée ou un message d'erreur
      */
     @PostMapping
-    public ResponseEntity<?> ajouterVille(@RequestBody Ville newVille) {
-        if (!valuesAreValid(newVille)) {
-            return ResponseEntity.badRequest().body("La ville n'a pas pu étre ajoutée (valeurs invalides)");
+    public ResponseEntity<?> ajouterVille(@Valid @RequestBody Ville newVille, BindingResult result) {
+
+//        if (!valuesAreValid(data)) {
+//            return ResponseEntity.badRequest().body("La ville n'a pas pu etre modifiee (valeurs invalides)");
+//        }
+
+        if (result.hasErrors()) {
+            List<ObjectError> errors = result.getAllErrors();
+            return ResponseEntity.badRequest().body(errors.get(0).getDefaultMessage());
         }
+
         for (Ville ville : this.villes) {
             if (ville.getNom().equalsIgnoreCase(newVille.getNom())) {
                 return ResponseEntity.badRequest().body("La ville existe deja");
@@ -96,9 +114,16 @@ public class VilleControleur {
      */
     @PutMapping(path = "/{id}")
     public ResponseEntity<?> modifierVille(@PathVariable int id, @RequestBody Ville data) {
-        if (!valuesAreValid(data)) {
-            return ResponseEntity.badRequest().body("La ville n'a pas pu etre modifiee (valeurs invalides)");
+//        if (!valuesAreValid(data)) {
+//            return ResponseEntity.badRequest().body("La ville n'a pas pu etre modifiee (valeurs invalides)");
+//        }
+
+        Errors result = validator.validateObject(data);
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(result.getFieldErrors().get(0).getCode() + " " + result.getFieldErrors().get(0).getDefaultMessage());
         }
+
         for (Ville ville : this.villes) {
             if (ville.getId() == id) {
                 ville.setNom(data.getNom());
