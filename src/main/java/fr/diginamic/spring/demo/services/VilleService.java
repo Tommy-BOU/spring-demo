@@ -1,5 +1,6 @@
 package fr.diginamic.spring.demo.services;
 
+import fr.diginamic.spring.demo.beans.Departement;
 import fr.diginamic.spring.demo.beans.Ville;
 import fr.diginamic.spring.demo.daos.DepartementDao;
 import fr.diginamic.spring.demo.daos.VilleDao;
@@ -72,8 +73,10 @@ public class VilleService {
     @PostMapping
     public ResponseEntity<?> insertVille(@RequestBody Ville ville) {
         if (valuesAreValid(ville)) {
+//            Ajout du departement selon le code postal de la ville
             String codeDepartement = ville.getCodePostal().substring(0, 2);
-            ville.setDepartement(daoDepartement.findByCodeDepartement(codeDepartement));
+            Departement departement = daoDepartement.findByCodeDepartement(codeDepartement);
+            ville.setDepartement(departement);
             List<Ville> villes = dao.insertVille(ville);
             List<VilleDto> villesDto = new ArrayList<>();
             for (Ville v : villes) {
@@ -97,6 +100,7 @@ public class VilleService {
             data.setId(id);
         }
         if (valuesAreValid(data)) {
+//            Modification du departement selon le code postal de la ville
             String codeDepartement = data.getCodePostal().substring(0, 2);
             data.setDepartement(daoDepartement.findByCodeDepartement(codeDepartement));
             List<Ville> villes = dao.modifierVille(id, data);

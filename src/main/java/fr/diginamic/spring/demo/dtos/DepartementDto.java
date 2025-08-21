@@ -21,8 +21,10 @@ public class DepartementDto {
         this.nom = departement.getNom();
         this.codeDepartement = departement.getCodeDepartement();
         this.villes = new ArrayList<>();
-        for (Ville ville : departement.getVilles()) {
-            this.villes.add(new VilleDto(ville));
+        if (departement.getVilles() != null) {
+            for (Ville ville : departement.getVilles()) {
+                this.villes.add(new VilleDto(ville));
+            }
         }
     }
 
