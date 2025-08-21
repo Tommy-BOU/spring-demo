@@ -1,4 +1,4 @@
-package fr.diginamic.hello.services;
+package fr.diginamic.spring.demo.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

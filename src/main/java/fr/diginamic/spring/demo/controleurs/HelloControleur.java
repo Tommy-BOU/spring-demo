@@ -1,6 +1,6 @@
-package fr.diginamic.hello.controleurs;
+package fr.diginamic.spring.demo.controleurs;
 
-import fr.diginamic.hello.services.HelloService;
+import fr.diginamic.spring.demo.services.HelloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
