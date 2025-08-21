@@ -1,6 +1,6 @@
-package fr.diginamic.hello.controleurs;
+package fr.diginamic.demo.controleurs;
 
-import fr.diginamic.hello.beans.Ville;
+import fr.diginamic.demo.beans.Ville;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;

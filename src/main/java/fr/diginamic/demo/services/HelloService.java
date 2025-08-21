@@ -1,7 +1,5 @@
-package fr.diginamic.hello.services;
+package fr.diginamic.demo.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service // Demande a spring de créer une instance de HelloService et de la mettre dans son conteneur pour une injection ultérieure
