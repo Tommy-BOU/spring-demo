@@ -2,10 +2,7 @@ package fr.diginamic.spring.demo.beans;
 
 import fr.diginamic.spring.demo.validationGroups.ModeCreation;
 import fr.diginamic.spring.demo.validationGroups.ModeModification;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -25,6 +22,14 @@ public class Ville {
     @Column(name="nb_habitants")
     @Min(value=1, message="Le nombre d'habitants doit etre superieur ou egal a 1", groups={ModeModification.class, ModeCreation.class})
     private Integer nbHabitants;
+
+    @NotNull
+    @Column(name="code_postal")
+    private String codePostal;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="id_departement")
+    private Departement departement;
 
     public Ville() {
     }
@@ -56,5 +61,27 @@ public class Ville {
 
     public void setNbHabitants(Integer nbHabitants) {
         this.nbHabitants = nbHabitants;
+    }
+
+    public @NotNull Departement getDepartement() {
+        return departement;
+    }
+
+    public void setDepartement(Departement departement) {
+        if (this.departement != null) {
+            this.departement.removeVille(this);
+        }
+        this.departement = departement;
+        if (this.departement != null) {
+            this.departement.getVilles().add(this);
+        }
+    }
+
+    public @NotNull String getCodePostal() {
+        return codePostal;
+    }
+
+    public void setCodePostal(@NotNull String codePostal) {
+        this.codePostal = codePostal;
     }
 }

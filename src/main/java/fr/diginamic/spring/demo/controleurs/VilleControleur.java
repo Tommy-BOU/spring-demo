@@ -1,6 +1,7 @@
 package fr.diginamic.spring.demo.controleurs;
 
 import fr.diginamic.spring.demo.beans.Ville;
+import fr.diginamic.spring.demo.dtos.VilleDto;
 import fr.diginamic.spring.demo.services.VilleService;
 import jakarta.validation.Valid;
 
@@ -33,7 +34,7 @@ public class VilleControleur {
      * @return List<Ville>
      */
     @GetMapping
-    public List<Ville> getVilles() {
+    public List<VilleDto> getVilles() {
         return service.extractVilles();
     }
 
@@ -44,7 +45,7 @@ public class VilleControleur {
      * @return La {@link Ville} ou un message d'erreur
      */
     @GetMapping(path = "/{id}")
-    public Ville getVilleById(@PathVariable int id) {
+    public VilleDto getVilleById(@PathVariable int id) {
         return service.extractVille(id);
     }
 
@@ -55,7 +56,7 @@ public class VilleControleur {
      * @return La {@link Ville} ou un message d'erreur
      */
     @GetMapping(path = "/{nom}")
-    public Ville getVilleByName(@PathVariable String nom) {
+    public VilleDto getVilleByName(@PathVariable String nom) {
         return service.extractVille(nom);
     }
 
@@ -67,10 +68,7 @@ public class VilleControleur {
      */
     @PostMapping
     public ResponseEntity<?> ajouterVille(@RequestBody Ville newVille) {
-        if (!valuesAreValid(newVille)) {
-            return ResponseEntity.badRequest().body("La ville n'a pas pu etre ajoutee (valeures invalides)");
-        }
-        return ResponseEntity.ok().body(service.insertVille(newVille));
+        return service.insertVille(newVille);
     }
 
     /**
@@ -82,10 +80,7 @@ public class VilleControleur {
      */
     @PutMapping(path = "/{id}")
     public ResponseEntity<?> modifierVille(@PathVariable int id, @RequestBody Ville data) {
-        if (!valuesAreValid(id, data)) {
-            return ResponseEntity.badRequest().body("La ville n'a pas pu etre modifiee (valeures invalides)");
-        }
-        return ResponseEntity.ok().body(service.modifierVille(id, data));
+        return service.modifierVille(id, data);
     }
 
     /**
@@ -95,27 +90,8 @@ public class VilleControleur {
      * @return La liste des {@link Ville} apres suppression
      */
     @DeleteMapping(path = "/{id}")
-    public List<Ville> supprimerVille(@PathVariable int id) {
+    public List<VilleDto> supprimerVille(@PathVariable int id) {
         return service.supprimerVille(id);
     }
 
-    /**
-     * Vérifie les valeurs de la {@link Ville} si elle ne possède pas d'ID (ajout)
-     *
-     * @param ville
-     * @return true si les valeurs sont valides, false sinon
-     */
-    public boolean valuesAreValid(Ville ville) {
-        return ville.getNom() != null && ville.getNom().length() >= 2 && ville.getNbHabitants() >= 1;
-    }
-
-    /**
-     * Vérifie les valeurs de la {@link Ville} si elle possède un ID (mise à jour)
-     *
-     * @param ville
-     * @return true si les valeurs sont valides, false sinon
-     */
-    public boolean valuesAreValid(int id, Ville ville) {
-        return id >= 0 && ville.getNom() != null && ville.getNom().length() >= 2 && ville.getNbHabitants() >= 1;
-    }
 }
