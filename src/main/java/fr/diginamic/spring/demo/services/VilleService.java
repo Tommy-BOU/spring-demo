@@ -74,8 +74,10 @@ public class VilleService {
     public ResponseEntity<?> insertVille(@RequestBody Ville ville) {
         if (valuesAreValid(ville)) {
 //            Ajout du departement selon le code postal de la ville
-            String codeDepartement = ville.getCodePostal().substring(0, 2);
-            Departement departement = daoDepartement.findByCodeDepartement(codeDepartement);
+            Departement departement = findDepartementFromCode(ville);
+            if (departement == null) {
+                return ResponseEntity.badRequest().body("Aucun département ne correspond au code postal de la ville");
+            }
             ville.setDepartement(departement);
             List<Ville> villes = dao.insertVille(ville);
             List<VilleDto> villesDto = new ArrayList<>();
@@ -101,8 +103,11 @@ public class VilleService {
         }
         if (valuesAreValid(data)) {
 //            Modification du departement selon le code postal de la ville
-            String codeDepartement = data.getCodePostal().substring(0, 2);
-            data.setDepartement(daoDepartement.findByCodeDepartement(codeDepartement));
+            Departement departement = findDepartementFromCode(data);
+            if (departement == null) {
+                return ResponseEntity.badRequest().body("Aucun département ne correspond au code postal de la ville");
+            }
+            data.setDepartement(departement);
             List<Ville> villes = dao.modifierVille(id, data);
             List<VilleDto> villesDto = new ArrayList<>();
             for (Ville v : villes) {
@@ -140,5 +145,22 @@ public class VilleService {
             return ville.getId() >= 0 && ville.getNom() != null && ville.getNom().length() >= 2 && ville.getNbHabitants() >= 1 && ville.getCodePostal() != null;
         }
         return ville.getNom() != null && ville.getNom().length() >= 2 && ville.getNbHabitants() >= 1 && ville.getCodePostal() != null;
+    }
+
+    /**
+     * Récupère le {@link Departement} correspondant au code postal de la {@link Ville}
+     * @param ville La {@link Ville} dont on veut le {@link Departement}
+     * @return Le {@link Departement} correspondant. Null si aucun {@link Departement} ne correspond au code postal de la {@link Ville}
+     */
+    public Departement findDepartementFromCode(Ville ville){
+        String codeDepartement = ville.getCodePostal().substring(0, 2);
+        List<Departement> departements = daoDepartement.findAll();
+        for (Departement departement : departements) {
+            if (departement.getCodeDepartement().equals(codeDepartement)) {
+                ville.setDepartement(departement);
+                return departement;
+            }
+        }
+        return null;
     }
 }
