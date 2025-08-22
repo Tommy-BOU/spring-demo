@@ -111,6 +111,10 @@ public class DepartementService {
     @PostMapping
     public ResponseEntity<?> insertDepartement(@RequestBody Departement departement) {
         if (valuesAreValid(departement)) {
+            Departement departementExist = dao.findByCodeDepartement(departement.getCodeDepartement());
+            if (departementExist != null) {
+                return ResponseEntity.badRequest().body("Le departement existe deja");
+            }
             dao.insertDepartement(departement);
             return ResponseEntity.ok().body(mapper.toDtos(dao.findAll()));
         }
@@ -127,6 +131,10 @@ public class DepartementService {
     @PutMapping
     public ResponseEntity<?> modifierDepartement(int id, @RequestBody Departement departement) {
         if (valuesAreValid(departement)) {
+            Departement departementExist = dao.findByCodeDepartement(departement.getCodeDepartement());
+            if (departementExist != null && departementExist.getId() != id) {
+                return ResponseEntity.badRequest().body("Le departement existe deja");
+            }
             dao.modifierDepartement(id, departement);
             return ResponseEntity.ok().body(mapper.toDtos(dao.findAll()));
         }

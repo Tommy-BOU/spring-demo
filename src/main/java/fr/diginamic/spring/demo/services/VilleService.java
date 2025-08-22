@@ -79,6 +79,10 @@ public class VilleService {
     public ResponseEntity<?> insertVille(@RequestBody Ville ville) {
         if (valuesAreValid(ville)) {
 //            Ajout du departement selon le code postal de la ville
+            Ville villeExistante = dao.findByNom(ville.getNom());
+            if (villeExistante != null) {
+                return ResponseEntity.badRequest().body("Une ville portant le mâme nom existe deja");
+            }
             Departement departement = findDepartementFromCode(ville);
             if (departement == null) {
                 return ResponseEntity.badRequest().body("Aucun département ne correspond au code postal de la ville");
@@ -104,6 +108,10 @@ public class VilleService {
         }
         if (valuesAreValid(data)) {
 //            Modification du departement selon le code postal de la ville
+            Ville villeExistante = dao.findByNom(data.getNom());
+            if (villeExistante != null && villeExistante.getId() != id) {
+                return ResponseEntity.badRequest().body("Une ville portant le mâme nom existe deja");
+            }
             Departement departement = findDepartementFromCode(data);
             if (departement == null) {
                 return ResponseEntity.badRequest().body("Aucun département ne correspond au code postal de la ville");
