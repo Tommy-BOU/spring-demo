@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.Objects;
+
 @Entity
 public class Ville {
 
@@ -24,10 +26,11 @@ public class Ville {
     private Integer nbHabitants;
 
     @NotNull
+    @Size(min=5, max=5, message="Le code postal doit avoir 5 chiffres", groups={ModeModification.class, ModeCreation.class})
     @Column(name="code_postal")
     private String codePostal;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="id_departement")
     private Departement departement;
 
@@ -83,5 +86,17 @@ public class Ville {
 
     public void setCodePostal(@NotNull String codePostal) {
         this.codePostal = codePostal;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Ville ville)) return false;
+        return Objects.equals(nom, ville.nom) && Objects.equals(codePostal, ville.codePostal) && Objects.equals(departement, ville.departement);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nom, codePostal, departement);
     }
 }

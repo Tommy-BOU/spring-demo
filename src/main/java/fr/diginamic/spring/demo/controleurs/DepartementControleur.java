@@ -40,7 +40,7 @@ public class DepartementControleur {
      * @return Le {@link Departement} ou un message d'erreur
      */
     @GetMapping(path = "/{id}")
-    public DepartementDto getDepartementById(@PathVariable int id) {
+    public ResponseEntity<?> getDepartementById(@PathVariable int id) {
         return service.extractDepartement(id);
     }
 
@@ -51,7 +51,7 @@ public class DepartementControleur {
      * @return Le {@link Departement} ou un message d'erreur
      */
     @GetMapping(path = "/code/{code}")
-    public DepartementDto getDepartementByCode(@PathVariable String code) {
+    public ResponseEntity<?> getDepartementByCode(@PathVariable String code) {
         return service.extractDepartement(code);
     }
 
@@ -87,7 +87,7 @@ public class DepartementControleur {
      * @return La liste des {@link Departement} apres suppression
      */
     @DeleteMapping(path = "/{id}")
-    public List<DepartementDto> supprimerDepartement(@PathVariable int id) {
+    public ResponseEntity<?> supprimerDepartement(@PathVariable int id) {
         return service.supprimerDepartement(id);
     }
 
@@ -110,7 +110,7 @@ public class DepartementControleur {
      * @return une List<VilleDto>
      */
     @GetMapping(path = "/{id}/villes/{popMin}/{popMax}")
-    public List<VilleDto> getVillesByDepartementAndPop(@PathVariable int id, @PathVariable int popMin, @PathVariable int popMax) {
+    public ResponseEntity<?> getVillesByDepartementAndPop(@PathVariable int id, @PathVariable int popMin, @PathVariable int popMax) {
         return service.extractVillesByDepartementAndPop(id, popMin, popMax);
     }
 }

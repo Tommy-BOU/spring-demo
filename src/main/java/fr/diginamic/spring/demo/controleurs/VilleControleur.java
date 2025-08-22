@@ -45,7 +45,7 @@ public class VilleControleur {
      * @return La {@link Ville} ou un message d'erreur
      */
     @GetMapping(path = "/{id}")
-    public VilleDto getVilleById(@PathVariable int id) {
+    public ResponseEntity<?> getVilleById(@PathVariable int id) {
         return service.extractVille(id);
     }
 
@@ -56,7 +56,7 @@ public class VilleControleur {
      * @return La {@link Ville} ou un message d'erreur
      */
     @GetMapping(path = "/name/{nom}")
-    public VilleDto getVilleByName(@PathVariable String nom) {
+    public ResponseEntity<?> getVilleByName(@PathVariable String nom) {
         return service.extractVille(nom);
     }
 
@@ -90,7 +90,7 @@ public class VilleControleur {
      * @return La liste des {@link Ville} apres suppression
      */
     @DeleteMapping(path = "/{id}")
-    public List<VilleDto> supprimerVille(@PathVariable int id) {
+    public ResponseEntity<?> supprimerVille(@PathVariable int id) {
         return service.supprimerVille(id);
     }
 

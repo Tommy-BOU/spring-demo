@@ -3,6 +3,7 @@ package fr.diginamic.spring.demo.beans;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Departement {
@@ -16,7 +17,7 @@ public class Departement {
     @Column(name = "code_departement")
     private String codeDepartement;
 
-    @OneToMany(mappedBy = "departement", cascade = jakarta.persistence.CascadeType.ALL)
+    @OneToMany(mappedBy = "departement")
     private List<Ville> villes;
 
     public Departement() {
@@ -62,5 +63,17 @@ public class Departement {
 
     public void removeVille(Ville ville) {
         this.villes.remove(ville);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Departement that)) return false;
+        return Objects.equals(codeDepartement, that.codeDepartement);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(codeDepartement);
     }
 }

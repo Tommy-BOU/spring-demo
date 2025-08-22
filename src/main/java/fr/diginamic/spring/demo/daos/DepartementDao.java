@@ -45,9 +45,8 @@ public class DepartementDao extends AbstractDao<Departement> {
      * @return La liste des {@link Departement} après l'insertion.
      */
     @Transactional
-    public List<Departement> insertDepartement(Departement departement) {
+    public void insertDepartement(Departement departement) {
         em.persist(departement);
-        return findAll();
     }
 
     /**
@@ -58,13 +57,12 @@ public class DepartementDao extends AbstractDao<Departement> {
      * @return La liste des {@link Departement} après la mise à jour.
      */
     @Transactional
-    public List<Departement> modifierDepartement(int id, Departement data) {
-        Departement dep = em.find(Departement.class, id);
+    public void modifierDepartement(int id, Departement data) {
+        Departement dep = findById(id);
         if (dep != null) {
             dep.setNom(data.getNom());
             dep.setCodeDepartement(data.getCodeDepartement());
         }
-        return findAll();
     }
 
     /**
@@ -74,11 +72,10 @@ public class DepartementDao extends AbstractDao<Departement> {
      * @return La liste des {@link Departement} après la suppression.
      */
     @Transactional
-    public List<Departement> supprimerDepartement(int id) {
-        Departement dep = em.find(Departement.class, id);
+    public void supprimerDepartement(int id) {
+        Departement dep = findById(id);
         if (dep != null) {
             em.remove(dep);
         }
-        return findAll();
     }
 }

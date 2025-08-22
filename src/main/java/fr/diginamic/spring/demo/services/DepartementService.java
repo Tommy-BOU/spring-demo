@@ -4,7 +4,9 @@ import fr.diginamic.spring.demo.beans.Departement;
 import fr.diginamic.spring.demo.beans.Ville;
 import fr.diginamic.spring.demo.daos.DepartementDao;
 import fr.diginamic.spring.demo.dtos.DepartementDto;
+import fr.diginamic.spring.demo.dtos.DepartementMapper;
 import fr.diginamic.spring.demo.dtos.VilleDto;
+import fr.diginamic.spring.demo.dtos.VilleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,43 +24,46 @@ public class DepartementService {
     @Autowired
     private DepartementDao dao;
 
+    @Autowired
+    private DepartementMapper mapper;
+
+    @Autowired
+    private VilleMapper villeMapper;
+
     /**
      * Récupère tout les departements.
      *
      * @return Liste de {@link Departement}.
      */
     public List<DepartementDto> extractDepartements() {
-        List<Departement> departements = dao.findAll();
-        List<DepartementDto> departementsDto = new ArrayList<>();
-        for (Departement departement : departements) {
-            departementsDto.add(new DepartementDto(departement, true));
-        }
-        return departementsDto;
+        return mapper.toDtos(dao.findAll());
     }
 
     /**
-     *  Récupère {@code num} villes du departement par son id.
-     * @param id L'id du {@link Departement}
+     * Récupère {@code num} villes du departement par son id.
+     *
+     * @param id  L'id du {@link Departement}
      * @param num Le nombre de {@link Ville} à retourner.
      * @return Liste de {@link VilleDto}.
      */
     public List<VilleDto> extractVillesByDepartement(int id, int num) {
         List<Ville> villes = dao.findAllVilleByDepartement(id);
-        List<VilleDto> villesDto = new ArrayList<>();
-        for (int i = 0; i < num; i++) {
-            villesDto.add(new VilleDto(villes.get(i), true));
-        }
-        return villesDto;
+        return villeMapper.toDtos(villes);
     }
 
     /**
      * Récupère toutes les villes d'un departement ayant une population comprise entre {@code popMin} et {@code popMax}.
-     * @param id L'id du {@link Departement}
+     *
+     * @param id     L'id du {@link Departement}
      * @param popMin La population minimale
      * @param popMax La population maximale
      * @return Liste de {@link VilleDto}.
      */
-    public List<VilleDto> extractVillesByDepartementAndPop(int id, int popMin, int popMax) {
+    public ResponseEntity<?> extractVillesByDepartementAndPop(int id, int popMin, int popMax) {
+        Departement departement = dao.findById(id);
+        if (departement == null) {
+            return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
+        }
         List<Ville> villes = dao.findAllVilleByDepartement(id);
         List<VilleDto> villesDto = new ArrayList<>();
         for (Ville ville : villes) {
@@ -66,7 +71,7 @@ public class DepartementService {
                 villesDto.add(new VilleDto(ville, true));
             }
         }
-        return villesDto;
+        return ResponseEntity.ok().body(villesDto);
     }
 
     /**
@@ -75,9 +80,12 @@ public class DepartementService {
      * @param id ID du {@link Departement}.
      * @return {@link Departement} correspondant.
      */
-    public DepartementDto extractDepartement(int id) {
+    public ResponseEntity<?> extractDepartement(int id) {
         Departement departement = dao.findById(id);
-        return new DepartementDto(departement, true);
+        if (departement == null) {
+            return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
+        }
+        return ResponseEntity.ok().body(mapper.toDto(departement));
     }
 
     /**
@@ -86,9 +94,12 @@ public class DepartementService {
      * @param code Le code du {@link Departement}.
      * @return {@link Departement} correspondant.
      */
-    public DepartementDto extractDepartement(String code) {
+    public ResponseEntity<?> extractDepartement(String code) {
         Departement departement = dao.findByCodeDepartement(code);
-        return new DepartementDto(departement, true);
+        if (departement == null) {
+            return ResponseEntity.badRequest().body("Aucun departement ne correspond au code");
+        }
+        return ResponseEntity.ok().body(mapper.toDto(departement));
     }
 
     /**
@@ -100,12 +111,8 @@ public class DepartementService {
     @PostMapping
     public ResponseEntity<?> insertDepartement(@RequestBody Departement departement) {
         if (valuesAreValid(departement)) {
-            List<Departement> departements= dao.insertDepartement(departement);
-            List<DepartementDto> departementsDto = new ArrayList<>();
-            for (Departement dep : departements) {
-                departementsDto.add(new DepartementDto(dep, true));
-            }
-            return ResponseEntity.ok().body(departementsDto);
+            dao.insertDepartement(departement);
+            return ResponseEntity.ok().body(mapper.toDtos(dao.findAll()));
         }
         return ResponseEntity.badRequest().body("Le departement n'a pas pu étre ajoutée (valeurs invalides)");
     }
@@ -120,12 +127,8 @@ public class DepartementService {
     @PutMapping
     public ResponseEntity<?> modifierDepartement(int id, @RequestBody Departement departement) {
         if (valuesAreValid(departement)) {
-            List<Departement> departements= dao.modifierDepartement(id, departement);
-            List<DepartementDto> departementsDto = new ArrayList<>();
-            for (Departement dep : departements) {
-                departementsDto.add(new DepartementDto(dep, true));
-            }
-            return ResponseEntity.ok().body(departementsDto);
+            dao.modifierDepartement(id, departement);
+            return ResponseEntity.ok().body(mapper.toDtos(dao.findAll()));
         }
         return ResponseEntity.badRequest().body("Le departement n'a pas pu étre modifiée (valeurs invalides)");
     }
@@ -137,13 +140,13 @@ public class DepartementService {
      * @return Liste des {@link Departement} après suppression.
      */
     @DeleteMapping
-    public List<DepartementDto> supprimerDepartement(int id) {
-        List<Departement> departements = dao.supprimerDepartement(id);
-        List<DepartementDto> departementsDto = new ArrayList<>();
-        for (Departement dep : departements) {
-            departementsDto.add(new DepartementDto(dep, true));
+    public ResponseEntity<?> supprimerDepartement(int id) {
+        Departement departement = dao.findById(id);
+        if (departement == null) {
+            return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
         }
-        return departementsDto;
+        dao.supprimerDepartement(id);
+        return ResponseEntity.ok().body(mapper.toDtos(dao.findAll()));
     }
 
     /**

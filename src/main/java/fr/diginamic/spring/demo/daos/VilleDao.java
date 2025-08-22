@@ -36,9 +36,8 @@ public class VilleDao extends AbstractDao<Ville> {
      * @return La liste des {@link Ville} après l'insertion.
      */
     @Transactional
-    public List<Ville> insertVille(Ville ville) {
+    public void insertVille(Ville ville) {
         em.persist(ville);
-        return findAll();
     }
 
     /**
@@ -46,16 +45,15 @@ public class VilleDao extends AbstractDao<Ville> {
      *
      * @param id   L'identifiant de la {@link Ville} à mettre à jour.
      * @param data Les nouvelles données de la {@link Ville}.
-     * @return La liste des {@link Ville} après la mise à jour.
+     *
      */
-    @Transactional
-    public List<Ville> modifierVille(int id, Ville data) {
-        Ville ville = em.find(Ville.class, id);
+    public void modifierVille(int id, Ville data) {
+        Ville ville = findById(id);
         if (ville != null) {
             ville.setNom(data.getNom());
             ville.setNbHabitants(data.getNbHabitants());
+            ville.setDepartement(data.getDepartement());
         }
-        return findAll();
     }
 
     /**
@@ -65,11 +63,10 @@ public class VilleDao extends AbstractDao<Ville> {
      * @return La liste des {@link Ville} après la suppression.
      */
     @Transactional
-    public List<Ville> supprimerVille(int id) {
-        Ville ville = em.find(Ville.class, id);
+    public void supprimerVille(int id) {
+        Ville ville = findById(id);
         if (ville != null) {
             em.remove(ville);
         }
-        return findAll();
     }
 }
