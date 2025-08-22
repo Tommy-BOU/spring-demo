@@ -1,8 +1,6 @@
 package fr.diginamic.spring.demo.daos;
 
 import fr.diginamic.spring.demo.beans.Ville;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
