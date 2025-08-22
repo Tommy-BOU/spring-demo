@@ -101,4 +101,16 @@ public class DepartementControleur {
     public List<VilleDto> getVillesByDepartement(@PathVariable int id, @PathVariable int num) {
         return service.extractVillesByDepartement(id, num);
     }
+
+    /**
+     * Retourne la liste des villes d'un departement dont la population est comprise entre {@code popMin} et {@code popMax}
+     * @param id L'id du {@link Departement}
+     * @param popMin La population minimale
+     * @param popMax La population maximale
+     * @return une List<VilleDto>
+     */
+    @GetMapping(path = "/{id}/villes/{popMin}/{popMax}")
+    public List<VilleDto> getVillesByDepartementAndPop(@PathVariable int id, @PathVariable int popMin, @PathVariable int popMax) {
+        return service.extractVillesByDepartementAndPop(id, popMin, popMax);
+    }
 }

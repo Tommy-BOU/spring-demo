@@ -53,4 +53,12 @@ public class VilleDto {
     public void setCodePostal(String codePostal) {
         this.codePostal = codePostal;
     }
+
+    public DepartementDto getDepartement() {
+        return departement;
+    }
+
+    public void setDepartement(DepartementDto departement) {
+        this.departement = departement;
+    }
 }

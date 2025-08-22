@@ -52,6 +52,24 @@ public class DepartementService {
     }
 
     /**
+     * Récupère toutes les villes d'un departement ayant une population comprise entre {@code popMin} et {@code popMax}.
+     * @param id L'id du {@link Departement}
+     * @param popMin La population minimale
+     * @param popMax La population maximale
+     * @return Liste de {@link VilleDto}.
+     */
+    public List<VilleDto> extractVillesByDepartementAndPop(int id, int popMin, int popMax) {
+        List<Ville> villes = dao.findAllByDepartement(id);
+        List<VilleDto> villesDto = new ArrayList<>();
+        for (Ville ville : villes) {
+            if (ville.getNbHabitants() >= popMin && ville.getNbHabitants() <= popMax) {
+                villesDto.add(new VilleDto(ville, true));
+            }
+        }
+        return villesDto;
+    }
+
+    /**
      * Récupère un {@link Departement} par son ID.
      *
      * @param id ID du {@link Departement}.
