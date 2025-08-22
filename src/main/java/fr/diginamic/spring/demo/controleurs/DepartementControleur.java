@@ -2,6 +2,7 @@ package fr.diginamic.spring.demo.controleurs;
 
 import fr.diginamic.spring.demo.beans.Departement;
 import fr.diginamic.spring.demo.dtos.DepartementDto;
+import fr.diginamic.spring.demo.dtos.VilleDto;
 import fr.diginamic.spring.demo.services.DepartementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -46,8 +47,8 @@ public class DepartementControleur {
     /**
      * Retourne un departement selon son nom
      *
-     * @param code Le code de la departement
-     * @return La {@link Departement} ou un message d'erreur
+     * @param code Le code du departement
+     * @return Le {@link Departement} ou un message d'erreur
      */
     @GetMapping(path = "/{code}")
     public DepartementDto getDepartementByCode(@PathVariable String code) {
@@ -55,9 +56,9 @@ public class DepartementControleur {
     }
 
     /**
-     * Ajoute une departement dans la liste
+     * Ajoute un departement dans la liste
      *
-     * @param newDepartement La departement ajoutée
+     * @param newDepartement Le departement ajoutée
      * @return Liste des {@link Departement} après insertion
      */
     @PostMapping
@@ -68,8 +69,8 @@ public class DepartementControleur {
     /**
      * Modifie une {@link Departement} de la liste par son identifiant
      *
-     * @param id   L'identifiant de la {@link Departement} à modifier
-     * @param data Les nouvelles données de la {@link Departement} sous forme d'instance
+     * @param id   L'identifiant du {@link Departement} à modifier
+     * @param data Les nouvelles données du {@link Departement} sous forme d'instance
      * @return La liste des {@link Departement} apres modification
      */
     @PutMapping(path = "/{id}")
@@ -80,7 +81,7 @@ public class DepartementControleur {
     }
 
     /**
-     * Supprime une {@link Departement} de la liste par son identifiant.
+     * Supprime un {@link Departement} de la liste par son identifiant.
      *
      * @param id L'identifiant de la {@link Departement} à supprimer
      * @return La liste des {@link Departement} apres suppression
@@ -88,5 +89,16 @@ public class DepartementControleur {
     @DeleteMapping(path = "/{id}")
     public List<DepartementDto> supprimerDepartement(@PathVariable int id) {
         return service.supprimerDepartement(id);
+    }
+
+    /**
+     * Retourne la liste des villes d'un departement contenant {@code num} villes
+     * @param id L'id du {@link Departement}
+     * @param num Le nombre de villes à retourner
+     * @return List<VilleDto>
+     */
+    @GetMapping(path = "/{id}/villes/{num}")
+    public List<VilleDto> getVillesByDepartement(@PathVariable int id, @PathVariable int num) {
+        return service.extractVillesByDepartement(id, num);
     }
 }

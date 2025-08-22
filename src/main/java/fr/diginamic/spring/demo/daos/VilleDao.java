@@ -28,6 +28,7 @@ public class VilleDao {
         return query.getResultList();
     }
 
+
     /**
      * Renvoie une ville selon son identifiant.
      *

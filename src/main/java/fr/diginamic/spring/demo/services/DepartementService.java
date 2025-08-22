@@ -1,8 +1,10 @@
 package fr.diginamic.spring.demo.services;
 
 import fr.diginamic.spring.demo.beans.Departement;
+import fr.diginamic.spring.demo.beans.Ville;
 import fr.diginamic.spring.demo.daos.DepartementDao;
 import fr.diginamic.spring.demo.dtos.DepartementDto;
+import fr.diginamic.spring.demo.dtos.VilleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,9 +31,24 @@ public class DepartementService {
         List<Departement> departements = dao.findAll();
         List<DepartementDto> departementsDto = new ArrayList<>();
         for (Departement departement : departements) {
-            departementsDto.add(new DepartementDto(departement));
+            departementsDto.add(new DepartementDto(departement, true));
         }
         return departementsDto;
+    }
+
+    /**
+     *  Récupère {@code num} villes du departement par son id.
+     * @param id L'id du {@link Departement}
+     * @param num Le nombre de {@link Ville} à retourner.
+     * @return Liste de {@link VilleDto}.
+     */
+    public List<VilleDto> extractVillesByDepartement(int id, int num) {
+        List<Ville> villes = dao.findAllByDepartement(id);
+        List<VilleDto> villesDto = new ArrayList<>();
+        for (int i = 0; i < num; i++) {
+            villesDto.add(new VilleDto(villes.get(i), true));
+        }
+        return villesDto;
     }
 
     /**
@@ -42,7 +59,7 @@ public class DepartementService {
      */
     public DepartementDto extractDepartement(int id) {
         Departement departement = dao.findById(id);
-        return new DepartementDto(departement);
+        return new DepartementDto(departement, true);
     }
 
     /**
@@ -53,7 +70,7 @@ public class DepartementService {
      */
     public DepartementDto extractDepartement(String code) {
         Departement departement = dao.findByCodeDepartement(code);
-        return new DepartementDto(departement);
+        return new DepartementDto(departement, true);
     }
 
     /**
@@ -68,7 +85,7 @@ public class DepartementService {
             List<Departement> departements= dao.insertDepartement(departement);
             List<DepartementDto> departementsDto = new ArrayList<>();
             for (Departement dep : departements) {
-                departementsDto.add(new DepartementDto(dep));
+                departementsDto.add(new DepartementDto(dep, true));
             }
             return ResponseEntity.ok().body(departementsDto);
         }
@@ -88,7 +105,7 @@ public class DepartementService {
             List<Departement> departements= dao.modifierDepartement(id, departement);
             List<DepartementDto> departementsDto = new ArrayList<>();
             for (Departement dep : departements) {
-                departementsDto.add(new DepartementDto(dep));
+                departementsDto.add(new DepartementDto(dep, true));
             }
             return ResponseEntity.ok().body(departementsDto);
         }
@@ -106,7 +123,7 @@ public class DepartementService {
         List<Departement> departements = dao.supprimerDepartement(id);
         List<DepartementDto> departementsDto = new ArrayList<>();
         for (Departement dep : departements) {
-            departementsDto.add(new DepartementDto(dep));
+            departementsDto.add(new DepartementDto(dep, true));
         }
         return departementsDto;
     }

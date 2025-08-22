@@ -7,19 +7,19 @@ public class VilleDto {
     private String nom;
     private Integer nbHabitants;
     private String codePostal;
-    private String nomDepartement;
-    private String codeDepartement;
+    private DepartementDto departement;
 
     public VilleDto() {
     }
 
-    public VilleDto(Ville ville) {
+    public VilleDto(Ville ville, boolean withDepartement) {
         this.id = ville.getId();
         this.nom = ville.getNom();
         this.nbHabitants = ville.getNbHabitants();
         this.codePostal = ville.getCodePostal();
-        this.codeDepartement = ville.getDepartement().getCodeDepartement();
-        this.nomDepartement = ville.getDepartement().getNom();
+        if (withDepartement) {
+            this.departement = new DepartementDto(ville.getDepartement(), false);
+        }
     }
 
     public Integer getId() {
@@ -52,21 +52,5 @@ public class VilleDto {
 
     public void setCodePostal(String codePostal) {
         this.codePostal = codePostal;
-    }
-
-    public String getNomDepartement() {
-        return nomDepartement;
-    }
-
-    public void setNomDepartement(String nomDepartement) {
-        this.nomDepartement = nomDepartement;
-    }
-
-    public String getCodeDepartement() {
-        return codeDepartement;
-    }
-
-    public void setCodeDepartement(String codeDepartement) {
-        this.codeDepartement = codeDepartement;
     }
 }

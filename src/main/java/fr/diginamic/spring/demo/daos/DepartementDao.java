@@ -1,6 +1,7 @@
 package fr.diginamic.spring.demo.daos;
 
 import fr.diginamic.spring.demo.beans.Departement;
+import fr.diginamic.spring.demo.beans.Ville;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -46,6 +47,16 @@ public class DepartementDao {
         return query.getSingleResult();
     }
 
+    /**
+     * Renvoie toutes d'un département.
+     * @param idDepartement L'id du departement
+     * @return La liste des {@link Ville}
+     */
+    public List<Ville> findAllByDepartement(int idDepartement) {
+        TypedQuery<Ville> query = em.createQuery("SELECT p FROM Ville p WHERE p.departement.id = :idDepartement ORDER BY p.nbHabitants DESC", Ville.class);
+        query.setParameter("idDepartement", idDepartement);
+        return query.getResultList();
+    }
 
     /**
      * Insère un departement dans la base de données.

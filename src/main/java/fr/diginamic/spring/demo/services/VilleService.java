@@ -37,7 +37,7 @@ public class VilleService {
         List<Ville> villes = dao.findAll();
         List<VilleDto> villesDto = new ArrayList<>();
         for (Ville ville : villes) {
-            villesDto.add(new VilleDto(ville));
+            villesDto.add(new VilleDto(ville, true));
         }
         return villesDto;
     }
@@ -50,7 +50,7 @@ public class VilleService {
      */
     public VilleDto extractVille(int id) {
         Ville ville = dao.findById(id);
-        return new VilleDto(ville);
+        return new VilleDto(ville, true);
     }
 
     /**
@@ -61,7 +61,7 @@ public class VilleService {
      */
     public VilleDto extractVille(String nom) {
         Ville ville = dao.findByNom(nom);
-        return new VilleDto(ville);
+        return new VilleDto(ville, true);
     }
 
     /**
@@ -80,7 +80,7 @@ public class VilleService {
             List<Ville> villes = dao.insertVille(ville);
             List<VilleDto> villesDto = new ArrayList<>();
             for (Ville v : villes) {
-                villesDto.add(new VilleDto(v));
+                villesDto.add(new VilleDto(v, true));
             }
             return ResponseEntity.ok().body(villesDto);
         }
@@ -106,7 +106,7 @@ public class VilleService {
             List<Ville> villes = dao.modifierVille(id, data);
             List<VilleDto> villesDto = new ArrayList<>();
             for (Ville v : villes) {
-                villesDto.add(new VilleDto(v));
+                villesDto.add(new VilleDto(v, true));
             }
             return ResponseEntity.ok().body(villesDto);
         }
@@ -124,7 +124,7 @@ public class VilleService {
         List<Ville> villes = dao.supprimerVille(id);
         List<VilleDto> villesDto = new ArrayList<>();
         for (Ville ville : villes) {
-            villesDto.add(new VilleDto(ville));
+            villesDto.add(new VilleDto(ville, true));
         }
         return villesDto;
     }

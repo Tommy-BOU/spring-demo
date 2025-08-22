@@ -16,17 +16,34 @@ public class DepartementDto {
 
     }
 
-    public DepartementDto(Departement departement) {
+    public DepartementDto(Departement departement, boolean withVilles) {
         this.id = departement.getId();
         this.nom = departement.getNom();
         this.codeDepartement = departement.getCodeDepartement();
-        this.villes = new ArrayList<>();
-        if (departement.getVilles() != null) {
-            for (Ville ville : departement.getVilles()) {
-                this.villes.add(new VilleDto(ville));
+        if (withVilles) {
+            this.villes = new ArrayList<>();
+            if (departement.getVilles() != null) {
+                for (Ville ville : departement.getVilles()) {
+                    this.villes.add(new VilleDto(ville, false));
+                }
             }
         }
+        else {
+            this.villes = new ArrayList<>();
+        }
     }
+
+//    public DepartementDto(Departement departement) {
+//        this.id = departement.getId();
+//        this.nom = departement.getNom();
+//        this.codeDepartement = departement.getCodeDepartement();
+//        this.villes = new ArrayList<>();
+//        if (departement.getVilles() != null) {
+//            for (Ville ville : departement.getVilles()) {
+//                this.villes.add(new VilleDto(ville));
+//            }
+//        }
+//    }
 
     public int getId() {
         return id;
