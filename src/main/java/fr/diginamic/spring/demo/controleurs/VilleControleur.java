@@ -55,7 +55,7 @@ public class VilleControleur {
      * @param nom Le nom de la ville
      * @return La {@link Ville} ou un message d'erreur
      */
-    @GetMapping(path = "/{nom}")
+    @GetMapping(path = "/name/{nom}")
     public VilleDto getVilleByName(@PathVariable String nom) {
         return service.extractVille(nom);
     }

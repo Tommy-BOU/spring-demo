@@ -11,30 +11,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class DepartementDao {
-    @PersistenceContext
-    private EntityManager em;
+public class DepartementDao extends AbstractDao<Departement> {
 
-    /**
-     * Renvoie tous les departements de la base de données.
-     *
-     * @return La liste des {@link Departement}.
-     */
-    public List<Departement> findAll() {
-        TypedQuery<Departement> query = em.createQuery("SELECT p FROM Departement p", Departement.class);
-        return query.getResultList();
+    public DepartementDao() {
+        super(Departement.class);
     }
-
-    /**
-     * Renvoie un departement selon son identifiant.
-     *
-     * @param id L'identifiant du {@link Departement}.
-     * @return Le {@link Departement} ou <code>null</code> si il n'existe pas.
-     */
-    public Departement findById(int id) {
-        return em.find(Departement.class, id);
-    }
-
     /**
      * Renvoie un departement selon son nom.
      *

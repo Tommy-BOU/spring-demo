@@ -50,7 +50,7 @@ public class DepartementControleur {
      * @param code Le code du departement
      * @return Le {@link Departement} ou un message d'erreur
      */
-    @GetMapping(path = "/{code}")
+    @GetMapping(path = "/code/{code}")
     public DepartementDto getDepartementByCode(@PathVariable String code) {
         return service.extractDepartement(code);
     }

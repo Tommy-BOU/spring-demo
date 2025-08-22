@@ -147,7 +147,7 @@ public class DepartementService {
     }
 
     /**
-     * Vérifie les valeurs de la {@link Departement}
+     * Vérifie les valeurs du {@link Departement}
      *
      * @param departement Le {@link Departement} à vérifier.
      * @return true si les valeurs sont valides, false sinon

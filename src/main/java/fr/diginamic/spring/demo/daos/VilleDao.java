@@ -13,30 +13,10 @@ import java.util.List;
  * Classe DAO pour la gestion des entités {@link Ville}.
  */
 @Service
-public class VilleDao {
+public class VilleDao extends AbstractDao<Ville> {
 
-    @PersistenceContext
-    private EntityManager em;
-
-    /**
-     * Renvoie toutes les villes de la base de données.
-     *
-     * @return La liste des {@link Ville}.
-     */
-    public List<Ville> findAll() {
-        TypedQuery<Ville> query = em.createQuery("SELECT p FROM Ville p", Ville.class);
-        return query.getResultList();
-    }
-
-
-    /**
-     * Renvoie une ville selon son identifiant.
-     *
-     * @param id L'identifiant de la {@link Ville}.
-     * @return La {@link Ville} ou <code>null</code> si elle n'existe pas.
-     */
-    public Ville findById(int id) {
-        return em.find(Ville.class, id);
+    public VilleDao() {
+        super(Ville.class);
     }
 
     /**
