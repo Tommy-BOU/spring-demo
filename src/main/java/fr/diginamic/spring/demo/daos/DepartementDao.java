@@ -2,8 +2,6 @@ package fr.diginamic.spring.demo.daos;
 
 import fr.diginamic.spring.demo.beans.Departement;
 import fr.diginamic.spring.demo.beans.Ville;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -16,6 +14,7 @@ public class DepartementDao extends AbstractDao<Departement> {
     public DepartementDao() {
         super(Departement.class);
     }
+
     /**
      * Renvoie un departement selon son nom.
      *
@@ -29,11 +28,11 @@ public class DepartementDao extends AbstractDao<Departement> {
     }
 
     /**
-     * Renvoie toutes d'un département.
+     * Renvoie toutes les villes d'un département.
      * @param idDepartement L'id du departement
      * @return La liste des {@link Ville}
      */
-    public List<Ville> findAllByDepartement(int idDepartement) {
+    public List<Ville> findAllVilleByDepartement(int idDepartement) {
         TypedQuery<Ville> query = em.createQuery("SELECT p FROM Ville p WHERE p.departement.id = :idDepartement ORDER BY p.nbHabitants DESC", Ville.class);
         query.setParameter("idDepartement", idDepartement);
         return query.getResultList();

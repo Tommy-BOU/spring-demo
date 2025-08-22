@@ -43,7 +43,7 @@ public class DepartementService {
      * @return Liste de {@link VilleDto}.
      */
     public List<VilleDto> extractVillesByDepartement(int id, int num) {
-        List<Ville> villes = dao.findAllByDepartement(id);
+        List<Ville> villes = dao.findAllVilleByDepartement(id);
         List<VilleDto> villesDto = new ArrayList<>();
         for (int i = 0; i < num; i++) {
             villesDto.add(new VilleDto(villes.get(i), true));
@@ -59,7 +59,7 @@ public class DepartementService {
      * @return Liste de {@link VilleDto}.
      */
     public List<VilleDto> extractVillesByDepartementAndPop(int id, int popMin, int popMax) {
-        List<Ville> villes = dao.findAllByDepartement(id);
+        List<Ville> villes = dao.findAllVilleByDepartement(id);
         List<VilleDto> villesDto = new ArrayList<>();
         for (Ville ville : villes) {
             if (ville.getNbHabitants() >= popMin && ville.getNbHabitants() <= popMax) {
