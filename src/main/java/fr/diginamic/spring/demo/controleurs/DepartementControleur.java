@@ -2,9 +2,9 @@ package fr.diginamic.spring.demo.controleurs;
 
 import fr.diginamic.spring.demo.beans.Departement;
 import fr.diginamic.spring.demo.dtos.DepartementDto;
-import fr.diginamic.spring.demo.dtos.VilleDto;
 import fr.diginamic.spring.demo.services.DepartementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.*;
@@ -94,12 +94,24 @@ public class DepartementControleur {
     /**
      * Retourne la liste des villes d'un departement contenant {@code num} villes
      * @param id L'id du {@link Departement}
-     * @param num Le nombre de villes à retourner
+     * @param size Le nombre de villes à retourner
      * @return List<VilleDto>
      */
-    @GetMapping(path = "/{id}/villes/{num}")
-    public List<VilleDto> getVillesByDepartement(@PathVariable int id, @PathVariable int num) {
-        return service.extractVillesByDepartement(id, num);
+    @GetMapping(path = "/{id}/villes/{size}")
+    public ResponseEntity<?> getVillesByDepartement(@PathVariable int id, @PathVariable int size, @RequestParam int page) {
+        PageRequest pagination = PageRequest.of(page, size);
+        return service.extractNVillesByDepartement(id, pagination);
+    }
+
+    /**
+     * Retourne la liste des villes d'un departement ayant une population supérieur à {@code popMin}
+     * @param id L'id du {@link Departement}
+     * @param popMin La population minimale
+     * @return List<VilleDto>
+     */
+    @GetMapping(path = "/{id}/villes/pop/{popMin}")
+    public ResponseEntity<?> getVillesByDepartementAndPopMin(@PathVariable int id, @PathVariable int popMin) {
+        return service.extractVillesByDepartementAndPopMin(id, popMin);
     }
 
     /**
@@ -109,8 +121,8 @@ public class DepartementControleur {
      * @param popMax La population maximale
      * @return une List<VilleDto>
      */
-    @GetMapping(path = "/{id}/villes/{popMin}/{popMax}")
-    public ResponseEntity<?> getVillesByDepartementAndPop(@PathVariable int id, @PathVariable int popMin, @PathVariable int popMax) {
-        return service.extractVillesByDepartementAndPop(id, popMin, popMax);
+    @GetMapping(path = "/{id}/villes/pop/{popMin}/{popMax}")
+    public ResponseEntity<?> getVillesByDepartementAndPopBetween(@PathVariable int id, @PathVariable int popMin, @PathVariable int popMax) {
+        return service.extractVillesByDepartementAndPopBetween(id, popMin, popMax);
     }
 }

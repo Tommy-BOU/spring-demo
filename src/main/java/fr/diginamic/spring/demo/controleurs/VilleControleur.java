@@ -3,16 +3,12 @@ package fr.diginamic.spring.demo.controleurs;
 import fr.diginamic.spring.demo.beans.Ville;
 import fr.diginamic.spring.demo.dtos.VilleDto;
 import fr.diginamic.spring.demo.services.VilleService;
-import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.*;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -34,8 +30,42 @@ public class VilleControleur {
      * @return List<Ville>
      */
     @GetMapping
-    public List<VilleDto> getVilles() {
-        return service.extractVilles();
+    public List<VilleDto> getVilles(@RequestParam int page, @RequestParam int size) {
+        PageRequest pagination = PageRequest.of(page, size);
+        return service.extractVilles(pagination);
+    }
+
+    /**
+     * Retourne une ville selon son nom
+     *
+     * @param nom Le nom de la ville
+     * @return La {@link Ville} ou un message d'erreur
+     */
+    @GetMapping(path = "/name/{nom}/all")
+    public ResponseEntity<?> getAllVilleByName(@PathVariable String nom) {
+        return service.extractVillesByNom(nom);
+    }
+
+    /**
+     * Retourne la liste des villes dont la population est supÃrieure Ã  {@code min}
+     * @param min La population minimale
+     * @return La liste des {@link Ville} ou un message d'erreur
+     */
+    @GetMapping(path = "/pop/{min}")
+    public ResponseEntity<?> getAllVillesPopGreaterThan(@PathVariable int min){
+        return service.extractVillesByNbHabitantsGreaterThan(min);
+    }
+
+
+    /**
+     * Retourne la liste des villes dont la population est comprise entre {@code min} et {@code max}
+     * @param min La population minimale
+     * @param max La population maximale
+     * @return La liste des {@link Ville} ou un message d'erreur
+     */
+    @GetMapping(path = "/pop/{min}/{max}")
+    public ResponseEntity<?> getAllVillesPopBetween(@PathVariable int min, @PathVariable int max){
+        return service.extractVillesByNbHabitantsBetween(min, max);
     }
 
     /**
@@ -59,6 +89,7 @@ public class VilleControleur {
     public ResponseEntity<?> getVilleByName(@PathVariable String nom) {
         return service.extractVille(nom);
     }
+
 
     /**
      * Ajoute une ville dans la liste

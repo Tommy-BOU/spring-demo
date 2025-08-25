@@ -2,17 +2,16 @@ package fr.diginamic.spring.demo.services;
 
 import fr.diginamic.spring.demo.beans.Departement;
 import fr.diginamic.spring.demo.beans.Ville;
-import fr.diginamic.spring.demo.daos.DepartementDao;
 import fr.diginamic.spring.demo.dtos.DepartementDto;
 import fr.diginamic.spring.demo.dtos.DepartementMapper;
 import fr.diginamic.spring.demo.dtos.VilleDto;
 import fr.diginamic.spring.demo.dtos.VilleMapper;
+import fr.diginamic.spring.demo.repositories.DepartementRepository;
+import fr.diginamic.spring.demo.repositories.VilleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
@@ -22,7 +21,10 @@ import java.util.List;
 public class DepartementService {
 
     @Autowired
-    private DepartementDao dao;
+    private DepartementRepository repository;
+
+    @Autowired
+    private VilleRepository villeRepository;
 
     @Autowired
     private DepartementMapper mapper;
@@ -36,19 +38,43 @@ public class DepartementService {
      * @return Liste de {@link Departement}.
      */
     public List<DepartementDto> extractDepartements() {
-        return mapper.toDtos(dao.findAll());
+        return mapper.toDtos(repository.findAll());
     }
 
     /**
-     * Récupère {@code num} villes du departement par son id.
+     * Récupère toutes les villes d'un departement ayant une population minimale de {@code popMin} .
      *
-     * @param id  L'id du {@link Departement}
-     * @param num Le nombre de {@link Ville} à retourner.
+     * @param id     L'id du {@link Departement}
+     * @param min La population minimale
      * @return Liste de {@link VilleDto}.
      */
-    public List<VilleDto> extractVillesByDepartement(int id, int num) {
-        List<Ville> villes = dao.findAllVilleByDepartement(id);
-        return villeMapper.toDtos(villes);
+    public ResponseEntity<?> extractVillesByDepartementAndPopMin(int id, int min) {
+        Departement departement = repository.findById(id);
+        if (departement == null) {
+            return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
+        }
+        List<Ville> villes = villeRepository.findByDepartementAndNbHabitantsGreaterThanOrderByNbHabitantsDesc(departement, min);
+        List<VilleDto> villesDto = new ArrayList<>();
+        for (Ville ville : villes) {
+            if (ville.getNbHabitants() >= min) {
+                villesDto.add(new VilleDto(ville, true));
+            }
+        }
+        return ResponseEntity.ok().body(villesDto);
+    }
+
+    /**
+     * Récupère les 10 premières villes du departement par son id, triées par population.
+     *
+     * @param id L'id du {@link Departement}
+     * @return Liste de {@link VilleDto}.
+     */
+    public ResponseEntity<?> extractNVillesByDepartement(int id, PageRequest pageRequest) {
+        Departement departement = repository.findById(id);
+        if (departement == null) {
+            return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
+        }
+        return ResponseEntity.ok().body(villeMapper.toDtos(villeRepository.findAll(pageRequest).getContent()));
     }
 
     /**
@@ -59,12 +85,12 @@ public class DepartementService {
      * @param popMax La population maximale
      * @return Liste de {@link VilleDto}.
      */
-    public ResponseEntity<?> extractVillesByDepartementAndPop(int id, int popMin, int popMax) {
-        Departement departement = dao.findById(id);
+    public ResponseEntity<?> extractVillesByDepartementAndPopBetween(int id, int popMin, int popMax) {
+        Departement departement = repository.findById(id);
         if (departement == null) {
             return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
         }
-        List<Ville> villes = dao.findAllVilleByDepartement(id);
+        List<Ville> villes = villeRepository.findByDepartementAndNbHabitantsBetweenOrderByNbHabitantsDesc(departement, popMin, popMax);
         List<VilleDto> villesDto = new ArrayList<>();
         for (Ville ville : villes) {
             if (ville.getNbHabitants() >= popMin && ville.getNbHabitants() <= popMax) {
@@ -81,7 +107,7 @@ public class DepartementService {
      * @return {@link Departement} correspondant.
      */
     public ResponseEntity<?> extractDepartement(int id) {
-        Departement departement = dao.findById(id);
+        Departement departement = repository.findById(id);
         if (departement == null) {
             return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
         }
@@ -95,7 +121,7 @@ public class DepartementService {
      * @return {@link Departement} correspondant.
      */
     public ResponseEntity<?> extractDepartement(String code) {
-        Departement departement = dao.findByCodeDepartement(code);
+        Departement departement = repository.findByCodeDepartement(code);
         if (departement == null) {
             return ResponseEntity.badRequest().body("Aucun departement ne correspond au code");
         }
@@ -108,15 +134,14 @@ public class DepartementService {
      * @param departement {@link Departement} à ajouter.
      * @return Liste des {@link Departement} après ajout.
      */
-    @PostMapping
     public ResponseEntity<?> insertDepartement(@RequestBody Departement departement) {
         if (valuesAreValid(departement)) {
-            Departement departementExist = dao.findByCodeDepartement(departement.getCodeDepartement());
+            Departement departementExist = repository.findByCodeDepartement(departement.getCodeDepartement());
             if (departementExist != null) {
                 return ResponseEntity.badRequest().body("Le departement existe deja");
             }
-            dao.insertDepartement(departement);
-            return ResponseEntity.ok().body(mapper.toDtos(dao.findAll()));
+            repository.save(departement);
+            return ResponseEntity.ok().body(mapper.toDtos(repository.findAll()));
         }
         return ResponseEntity.badRequest().body("Le departement n'a pas pu étre ajoutée (valeurs invalides)");
     }
@@ -128,15 +153,14 @@ public class DepartementService {
      * @param departement {@link Departement} avec les nouvelles données.
      * @return Liste des {@link Departement} après modification.
      */
-    @PutMapping
     public ResponseEntity<?> modifierDepartement(int id, @RequestBody Departement departement) {
         if (valuesAreValid(departement)) {
-            Departement departementExist = dao.findByCodeDepartement(departement.getCodeDepartement());
+            Departement departementExist = repository.findByCodeDepartement(departement.getCodeDepartement());
             if (departementExist != null && departementExist.getId() != id) {
                 return ResponseEntity.badRequest().body("Le departement existe deja");
             }
-            dao.modifierDepartement(id, departement);
-            return ResponseEntity.ok().body(mapper.toDtos(dao.findAll()));
+            repository.save(departement);
+            return ResponseEntity.ok().body(mapper.toDtos(repository.findAll()));
         }
         return ResponseEntity.badRequest().body("Le departement n'a pas pu étre modifiée (valeurs invalides)");
     }
@@ -147,14 +171,13 @@ public class DepartementService {
      * @param id ID du departement.
      * @return Liste des {@link Departement} après suppression.
      */
-    @DeleteMapping
     public ResponseEntity<?> supprimerDepartement(int id) {
-        Departement departement = dao.findById(id);
+        Departement departement = repository.findById(id);
         if (departement == null) {
             return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
         }
-        dao.supprimerDepartement(id);
-        return ResponseEntity.ok().body(mapper.toDtos(dao.findAll()));
+        repository.deleteById(id);
+        return ResponseEntity.ok().body(mapper.toDtos(repository.findAll()));
     }
 
     /**
