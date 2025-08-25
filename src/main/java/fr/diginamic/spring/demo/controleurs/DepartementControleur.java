@@ -97,7 +97,7 @@ public class DepartementControleur {
      * @return List<VilleDto>
      */
     @GetMapping(path = "/{id}/villes")
-    public ResponseEntity<?> getAllVillesByDepartement(@PathVariable int id, @RequestParam int page) {
+    public ResponseEntity<?> getAllVillesByDepartement(@PathVariable int id) {
         return service.extractVillesByDepartement(id);
     }
 
