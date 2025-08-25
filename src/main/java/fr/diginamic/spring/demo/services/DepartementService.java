@@ -8,6 +8,8 @@ import fr.diginamic.spring.demo.dtos.VilleDto;
 import fr.diginamic.spring.demo.dtos.VilleMapper;
 import fr.diginamic.spring.demo.repositories.DepartementRepository;
 import fr.diginamic.spring.demo.repositories.VilleRepository;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -41,85 +43,6 @@ public class DepartementService {
         return mapper.toDtos(repository.findAll());
     }
 
-    /**
-     * Récupère toutes les villes d'un departement .
-     *
-     * @param id L'id du {@link Departement}
-     * @return Liste de {@link VilleDto}.
-     */
-    public ResponseEntity<?> extractVillesByDepartement(int id) {
-        Departement departement = repository.findById(id);
-        if (departement == null) {
-            return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
-        }
-        return ResponseEntity.ok().body(villeMapper.toDtos(villeRepository.findByDepartement(departement)));
-    }
-
-    /**
-     * Récupère toutes les villes d'un departement ayant une population minimale de {@code popMin} .
-     *
-     * @param id     L'id du {@link Departement}
-     * @param min La population minimale
-     * @return Liste de {@link VilleDto}.
-     */
-    public ResponseEntity<?> extractVillesByDepartementAndPopMin(int id, int min) {
-        Departement departement = repository.findById(id);
-        if (departement == null) {
-            return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
-        }
-        List<Ville> villes = villeRepository.findByDepartementAndNbHabitantsGreaterThanOrderByNbHabitantsDesc(departement, min);
-        List<VilleDto> villesDto = new ArrayList<>();
-        for (Ville ville : villes) {
-            if (ville.getNbHabitants() >= min) {
-                villesDto.add(new VilleDto(ville, true));
-            }
-        }
-        return ResponseEntity.ok().body(villesDto);
-    }
-
-    /**
-     * Récupère les 10 premières villes du departement par son id, triées par population.
-     *
-     * @param id L'id du {@link Departement}
-     * @return Liste de {@link VilleDto}.
-     */
-    public ResponseEntity<?> extractNVillesByDepartement(int id, PageRequest pageRequest) {
-        Departement departement = repository.findById(id);
-        if (departement == null) {
-            return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
-        }
-        List<Ville> villes = villeRepository.findAll(pageRequest).getContent();
-        List<VilleDto> filteredVilles = new ArrayList<>();
-        for (Ville v : villes){
-            if (v.getDepartement().getId() == id) {
-                filteredVilles.add(villeMapper.toDto(v));
-            }
-        }
-        return ResponseEntity.ok().body(filteredVilles);
-    }
-
-    /**
-     * Récupère toutes les villes d'un departement ayant une population comprise entre {@code popMin} et {@code popMax}.
-     *
-     * @param id     L'id du {@link Departement}
-     * @param popMin La population minimale
-     * @param popMax La population maximale
-     * @return Liste de {@link VilleDto}.
-     */
-    public ResponseEntity<?> extractVillesByDepartementAndPopBetween(int id, int popMin, int popMax) {
-        Departement departement = repository.findById(id);
-        if (departement == null) {
-            return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
-        }
-        List<Ville> villes = villeRepository.findByDepartementAndNbHabitantsBetweenOrderByNbHabitantsDesc(departement, popMin, popMax);
-        List<VilleDto> villesDto = new ArrayList<>();
-        for (Ville ville : villes) {
-            if (ville.getNbHabitants() >= popMin && ville.getNbHabitants() <= popMax) {
-                villesDto.add(new VilleDto(ville, true));
-            }
-        }
-        return ResponseEntity.ok().body(villesDto);
-    }
 
     /**
      * Récupère un {@link Departement} par son ID.
@@ -127,10 +50,10 @@ public class DepartementService {
      * @param id ID du {@link Departement}.
      * @return {@link Departement} correspondant.
      */
-    public ResponseEntity<?> extractDepartement(int id) {
+    public ResponseEntity<?> extractDepartement(int id) throws EntityNotFoundException {
         Departement departement = repository.findById(id);
         if (departement == null) {
-            return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
+            throw new EntityNotFoundException("Aucun département correspondant à l'ID n'a été trouvé");
         }
         return ResponseEntity.ok().body(mapper.toDto(departement));
     }
@@ -141,10 +64,10 @@ public class DepartementService {
      * @param code Le code du {@link Departement}.
      * @return {@link Departement} correspondant.
      */
-    public ResponseEntity<?> extractDepartement(String code) {
+    public ResponseEntity<?> extractDepartement(String code) throws EntityNotFoundException {
         Departement departement = repository.findByCodeDepartement(code);
         if (departement == null) {
-            return ResponseEntity.badRequest().body("Aucun departement ne correspond au code");
+            throw new EntityNotFoundException("Aucun département correspondant au code n'a été trouvé");
         }
         return ResponseEntity.ok().body(mapper.toDto(departement));
     }
@@ -155,11 +78,11 @@ public class DepartementService {
      * @param departement {@link Departement} à ajouter.
      * @return Liste des {@link Departement} après ajout.
      */
-    public ResponseEntity<?> insertDepartement(@RequestBody Departement departement) {
+    public ResponseEntity<?> insertDepartement(@RequestBody Departement departement) throws EntityExistsException {
         if (valuesAreValid(departement)) {
             Departement departementExist = repository.findByCodeDepartement(departement.getCodeDepartement());
             if (departementExist != null) {
-                return ResponseEntity.badRequest().body("Le departement existe deja");
+                throw new EntityExistsException("Le département existe déjà");
             }
             repository.save(departement);
             return ResponseEntity.ok().body(mapper.toDtos(repository.findAll()));
@@ -174,11 +97,11 @@ public class DepartementService {
      * @param departement {@link Departement} avec les nouvelles données.
      * @return Liste des {@link Departement} après modification.
      */
-    public ResponseEntity<?> modifierDepartement(int id, @RequestBody Departement departement) {
+    public ResponseEntity<?> modifierDepartement(int id, @RequestBody Departement departement) throws EntityExistsException {
         if (valuesAreValid(departement)) {
             Departement departementExist = repository.findByCodeDepartement(departement.getCodeDepartement());
             if (departementExist != null && departementExist.getId() != id) {
-                return ResponseEntity.badRequest().body("Le departement existe deja");
+                throw new EntityExistsException("Le département existe déjà");
             }
             repository.save(departement);
             return ResponseEntity.ok().body(mapper.toDtos(repository.findAll()));
@@ -192,10 +115,10 @@ public class DepartementService {
      * @param id ID du departement.
      * @return Liste des {@link Departement} après suppression.
      */
-    public ResponseEntity<?> supprimerDepartement(int id) {
+    public ResponseEntity<?> supprimerDepartement(int id) throws EntityNotFoundException {
         Departement departement = repository.findById(id);
         if (departement == null) {
-            return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
+            throw new EntityNotFoundException("Aucun département correspondant à l'ID n'a été trouvé");
         }
         repository.deleteById(id);
         return ResponseEntity.ok().body(mapper.toDtos(repository.findAll()));

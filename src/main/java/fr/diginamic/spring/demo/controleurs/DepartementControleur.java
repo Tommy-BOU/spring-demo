@@ -3,6 +3,7 @@ package fr.diginamic.spring.demo.controleurs;
 import fr.diginamic.spring.demo.beans.Departement;
 import fr.diginamic.spring.demo.dtos.DepartementDto;
 import fr.diginamic.spring.demo.services.DepartementService;
+import fr.diginamic.spring.demo.services.VilleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,9 @@ public class DepartementControleur {
 
     @Autowired
     private DepartementService service;
+
+    @Autowired
+    private VilleService villeService;
 
     /**
      * Retourne la liste des {@link Departement}
@@ -98,7 +102,7 @@ public class DepartementControleur {
      */
     @GetMapping(path = "/{id}/villes")
     public ResponseEntity<?> getAllVillesByDepartement(@PathVariable int id) {
-        return service.extractVillesByDepartement(id);
+        return villeService.extractVillesByDepartement(id);
     }
 
     /**
@@ -110,7 +114,7 @@ public class DepartementControleur {
     @GetMapping(path = "/{id}/villes/{size}")
     public ResponseEntity<?> getVillesByDepartement(@PathVariable int id, @PathVariable int size, @RequestParam int page) {
         PageRequest pagination = PageRequest.of(page, size);
-        return service.extractNVillesByDepartement(id, pagination);
+        return villeService.extractNVillesByDepartement(id, pagination);
     }
 
     /**
@@ -121,7 +125,7 @@ public class DepartementControleur {
      */
     @GetMapping(path = "/{id}/villes/pop/{popMin}")
     public ResponseEntity<?> getVillesByDepartementAndPopMin(@PathVariable int id, @PathVariable int popMin) {
-        return service.extractVillesByDepartementAndPopMin(id, popMin);
+        return villeService.extractVillesByDepartementAndPopMin(id, popMin);
     }
 
     /**
@@ -133,6 +137,6 @@ public class DepartementControleur {
      */
     @GetMapping(path = "/{id}/villes/pop/{popMin}/{popMax}")
     public ResponseEntity<?> getVillesByDepartementAndPopBetween(@PathVariable int id, @PathVariable int popMin, @PathVariable int popMax) {
-        return service.extractVillesByDepartementAndPopBetween(id, popMin, popMax);
+        return villeService.extractVillesByDepartementAndPopBetween(id, popMin, popMax);
     }
 }

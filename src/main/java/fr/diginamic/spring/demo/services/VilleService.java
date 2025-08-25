@@ -6,6 +6,7 @@ import fr.diginamic.spring.demo.dtos.VilleDto;
 import fr.diginamic.spring.demo.dtos.VilleMapper;
 import fr.diginamic.spring.demo.repositories.DepartementRepository;
 import fr.diginamic.spring.demo.repositories.VilleRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -105,6 +107,87 @@ public class VilleService {
             return ResponseEntity.badRequest().body("Aucune ville ne correspond au nom");
         }
         return ResponseEntity.ok().body(mapper.toDto(ville));
+    }
+
+    /**
+     * Récupère toutes les villes d'un departement .
+     *
+     * @param id L'id du {@link Departement}
+     * @return Liste de {@link VilleDto}.
+     */
+    public ResponseEntity<?> extractVillesByDepartement(int id) throws EntityNotFoundException {
+        Departement departement = repositoryDepartement.findById(id);
+        if (departement == null) {
+            throw new EntityNotFoundException("Aucun département correspondant à l'ID n'a été trouvé");
+//            return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
+        }
+        return ResponseEntity.ok().body(mapper.toDtos(repository.findByDepartement(departement)));
+    }
+
+    /**
+     * Récupère toutes les villes d'un departement ayant une population minimale de {@code popMin} .
+     *
+     * @param id     L'id du {@link Departement}
+     * @param min La population minimale
+     * @return Liste de {@link VilleDto}.
+     */
+    public ResponseEntity<?> extractVillesByDepartementAndPopMin(int id, int min) throws EntityNotFoundException{
+        Departement departement = repositoryDepartement.findById(id);
+        if (departement == null) {
+            throw new EntityNotFoundException("Aucun département correspondant à l'ID n'a été trouvé");
+        }
+        List<Ville> villes = repository.findByDepartementAndNbHabitantsGreaterThanOrderByNbHabitantsDesc(departement, min);
+        List<VilleDto> villesDto = new ArrayList<>();
+        for (Ville ville : villes) {
+            if (ville.getNbHabitants() >= min) {
+                villesDto.add(new VilleDto(ville, true));
+            }
+        }
+        return ResponseEntity.ok().body(villesDto);
+    }
+
+    /**
+     * Récupère les 10 premières villes du departement par son id, triées par population.
+     *
+     * @param id L'id du {@link Departement}
+     * @return Liste de {@link VilleDto}.
+     */
+    public ResponseEntity<?> extractNVillesByDepartement(int id, PageRequest pageRequest) throws EntityNotFoundException {
+        Departement departement = repositoryDepartement.findById(id);
+        if (departement == null) {
+            throw new EntityNotFoundException("Aucun département correspondant à l'ID n'a été trouvé");
+        }
+        List<Ville> villes = repository.findAll(pageRequest).getContent();
+        List<VilleDto> filteredVilles = new ArrayList<>();
+        for (Ville v : villes){
+            if (v.getDepartement().getId() == id) {
+                filteredVilles.add(mapper.toDto(v));
+            }
+        }
+        return ResponseEntity.ok().body(filteredVilles);
+    }
+
+    /**
+     * Récupère toutes les villes d'un departement ayant une population comprise entre {@code popMin} et {@code popMax}.
+     *
+     * @param id     L'id du {@link Departement}
+     * @param popMin La population minimale
+     * @param popMax La population maximale
+     * @return Liste de {@link VilleDto}.
+     */
+    public ResponseEntity<?> extractVillesByDepartementAndPopBetween(int id, int popMin, int popMax) throws EntityNotFoundException {
+        Departement departement = repositoryDepartement.findById(id);
+        if (departement == null) {
+            throw new EntityNotFoundException("Aucun département correspondant à l'ID n'a été trouvé");
+        }
+        List<Ville> villes = repository.findByDepartementAndNbHabitantsBetweenOrderByNbHabitantsDesc(departement, popMin, popMax);
+        List<VilleDto> villesDto = new ArrayList<>();
+        for (Ville ville : villes) {
+            if (ville.getNbHabitants() >= popMin && ville.getNbHabitants() <= popMax) {
+                villesDto.add(new VilleDto(ville, true));
+            }
+        }
+        return ResponseEntity.ok().body(villesDto);
     }
 
     /**
