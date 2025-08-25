@@ -10,6 +10,7 @@ public interface VilleRepository extends JpaRepository<Ville, Integer> {
 //    public Page<Ville> findAll();
     public Ville findById(int id);
     public Ville findByNom(String nom);
+    public List<Ville> findByDepartement(Departement departement);
     public List<Ville> findAllByNomStartingWith(String nom);
     public List<Ville> findByNbHabitantsGreaterThan(int nbHabitants);
     public List<Ville> findByNbHabitantsBetweenOrderByNbHabitantsDesc(int min, int max);

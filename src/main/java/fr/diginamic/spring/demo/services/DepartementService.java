@@ -42,6 +42,20 @@ public class DepartementService {
     }
 
     /**
+     * Récupère toutes les villes d'un departement .
+     *
+     * @param id L'id du {@link Departement}
+     * @return Liste de {@link VilleDto}.
+     */
+    public ResponseEntity<?> extractVillesByDepartement(int id) {
+        Departement departement = repository.findById(id);
+        if (departement == null) {
+            return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
+        }
+        return ResponseEntity.ok().body(villeMapper.toDtos(villeRepository.findByDepartement(departement)));
+    }
+
+    /**
      * Récupère toutes les villes d'un departement ayant une population minimale de {@code popMin} .
      *
      * @param id     L'id du {@link Departement}
@@ -74,7 +88,14 @@ public class DepartementService {
         if (departement == null) {
             return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
         }
-        return ResponseEntity.ok().body(villeMapper.toDtos(villeRepository.findAll(pageRequest).getContent()));
+        List<Ville> villes = villeRepository.findAll(pageRequest).getContent();
+        List<VilleDto> filteredVilles = new ArrayList<>();
+        for (Ville v : villes){
+            if (v.getDepartement().getId() == id) {
+                filteredVilles.add(villeMapper.toDto(v));
+            }
+        }
+        return ResponseEntity.ok().body(filteredVilles);
     }
 
     /**

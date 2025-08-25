@@ -92,6 +92,16 @@ public class DepartementControleur {
     }
 
     /**
+     * Retourne la liste des villes d'un departement
+     * @param id L'id du {@link Departement}
+     * @return List<VilleDto>
+     */
+    @GetMapping(path = "/{id}/villes")
+    public ResponseEntity<?> getAllVillesByDepartement(@PathVariable int id, @RequestParam int page) {
+        return service.extractVillesByDepartement(id);
+    }
+
+    /**
      * Retourne la liste des villes d'un departement contenant {@code num} villes
      * @param id L'id du {@link Departement}
      * @param size Le nombre de villes à retourner
