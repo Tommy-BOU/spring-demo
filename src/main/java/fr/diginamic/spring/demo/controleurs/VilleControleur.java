@@ -2,6 +2,7 @@ package fr.diginamic.spring.demo.controleurs;
 
 import fr.diginamic.spring.demo.beans.Ville;
 import fr.diginamic.spring.demo.dtos.VilleDto;
+import fr.diginamic.spring.demo.exceptions.ExceptionRequeteInvalide;
 import fr.diginamic.spring.demo.services.VilleService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class VilleControleur {
      * @return La {@link Ville} ou un message d'erreur
      */
     @GetMapping(path = "/name/{nom}/all")
-    public ResponseEntity<?> getAllVilleByName(@PathVariable String nom) {
+    public List<VilleDto> getAllVilleByName(@PathVariable String nom) throws ExceptionRequeteInvalide {
         return service.extractVillesByNom(nom);
     }
 
@@ -52,7 +53,7 @@ public class VilleControleur {
      * @return La liste des {@link Ville} ou un message d'erreur
      */
     @GetMapping(path = "/pop/{min}")
-    public ResponseEntity<?> getAllVillesPopGreaterThan(@PathVariable int min){
+    public List<VilleDto> getAllVillesPopGreaterThan(@PathVariable int min) throws ExceptionRequeteInvalide {
         return service.extractVillesByNbHabitantsGreaterThan(min);
     }
 
@@ -64,7 +65,7 @@ public class VilleControleur {
      * @return La liste des {@link Ville} ou un message d'erreur
      */
     @GetMapping(path = "/pop/{min}/{max}")
-    public ResponseEntity<?> getAllVillesPopBetween(@PathVariable int min, @PathVariable int max){
+    public List<VilleDto> getAllVillesPopBetween(@PathVariable int min, @PathVariable int max) throws ExceptionRequeteInvalide {
         return service.extractVillesByNbHabitantsBetween(min, max);
     }
 
@@ -75,7 +76,7 @@ public class VilleControleur {
      * @return La {@link Ville} ou un message d'erreur
      */
     @GetMapping(path = "/{id}")
-    public ResponseEntity<?> getVilleById(@PathVariable int id) {
+    public VilleDto getVilleById(@PathVariable int id) throws ExceptionRequeteInvalide {
         return service.extractVille(id);
     }
 
@@ -86,7 +87,7 @@ public class VilleControleur {
      * @return La {@link Ville} ou un message d'erreur
      */
     @GetMapping(path = "/name/{nom}")
-    public ResponseEntity<?> getVilleByName(@PathVariable String nom) {
+    public VilleDto getVilleByName(@PathVariable String nom) throws ExceptionRequeteInvalide {
         return service.extractVille(nom);
     }
 
@@ -98,7 +99,7 @@ public class VilleControleur {
      * @return Liste des {@link Ville} après insertion
      */
     @PostMapping
-    public ResponseEntity<?> ajouterVille(@RequestBody Ville newVille) {
+    public List<VilleDto> ajouterVille(@RequestBody Ville newVille) throws ExceptionRequeteInvalide {
         return service.insertVille(newVille);
     }
 
@@ -110,7 +111,7 @@ public class VilleControleur {
      * @return La liste des {@link Ville} apres modification
      */
     @PutMapping(path = "/{id}")
-    public ResponseEntity<?> modifierVille(@PathVariable int id, @RequestBody Ville data) {
+    public List<VilleDto> modifierVille(@PathVariable int id, @RequestBody Ville data) throws ExceptionRequeteInvalide {
         return service.modifierVille(id, data);
     }
 
@@ -121,7 +122,7 @@ public class VilleControleur {
      * @return La liste des {@link Ville} apres suppression
      */
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> supprimerVille(@PathVariable int id) {
+    public List<VilleDto> supprimerVille(@PathVariable int id) throws ExceptionRequeteInvalide {
         return service.supprimerVille(id);
     }
 

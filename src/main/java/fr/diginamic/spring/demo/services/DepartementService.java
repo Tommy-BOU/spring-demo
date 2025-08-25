@@ -1,17 +1,15 @@
 package fr.diginamic.spring.demo.services;
 
 import fr.diginamic.spring.demo.beans.Departement;
-import fr.diginamic.spring.demo.beans.Ville;
 import fr.diginamic.spring.demo.dtos.DepartementDto;
 import fr.diginamic.spring.demo.dtos.DepartementMapper;
-import fr.diginamic.spring.demo.dtos.VilleDto;
 import fr.diginamic.spring.demo.dtos.VilleMapper;
+import fr.diginamic.spring.demo.exceptions.ExceptionRequeteInvalide;
 import fr.diginamic.spring.demo.repositories.DepartementRepository;
 import fr.diginamic.spring.demo.repositories.VilleRepository;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,12 +48,12 @@ public class DepartementService {
      * @param id ID du {@link Departement}.
      * @return {@link Departement} correspondant.
      */
-    public ResponseEntity<?> extractDepartement(int id) throws EntityNotFoundException {
+    public DepartementDto extractDepartement(int id) throws ExceptionRequeteInvalide {
         Departement departement = repository.findById(id);
         if (departement == null) {
-            throw new EntityNotFoundException("Aucun département correspondant à l'ID n'a été trouvé");
+            throw new ExceptionRequeteInvalide("Aucun département correspondant à l'ID n'a été trouvé");
         }
-        return ResponseEntity.ok().body(mapper.toDto(departement));
+        return mapper.toDto(departement);
     }
 
     /**
@@ -64,12 +62,12 @@ public class DepartementService {
      * @param code Le code du {@link Departement}.
      * @return {@link Departement} correspondant.
      */
-    public ResponseEntity<?> extractDepartement(String code) throws EntityNotFoundException {
+    public DepartementDto extractDepartement(String code) throws ExceptionRequeteInvalide {
         Departement departement = repository.findByCodeDepartement(code);
         if (departement == null) {
-            throw new EntityNotFoundException("Aucun département correspondant au code n'a été trouvé");
+            throw new ExceptionRequeteInvalide("Aucun département correspondant au code n'a été trouvé");
         }
-        return ResponseEntity.ok().body(mapper.toDto(departement));
+        return mapper.toDto(departement);
     }
 
     /**
@@ -78,16 +76,16 @@ public class DepartementService {
      * @param departement {@link Departement} à ajouter.
      * @return Liste des {@link Departement} après ajout.
      */
-    public ResponseEntity<?> insertDepartement(@RequestBody Departement departement) throws EntityExistsException {
+    public List<DepartementDto> insertDepartement(@RequestBody Departement departement) throws ExceptionRequeteInvalide {
         if (valuesAreValid(departement)) {
             Departement departementExist = repository.findByCodeDepartement(departement.getCodeDepartement());
             if (departementExist != null) {
-                throw new EntityExistsException("Le département existe déjà");
+                throw new ExceptionRequeteInvalide("Le département existe déjà");
             }
             repository.save(departement);
-            return ResponseEntity.ok().body(mapper.toDtos(repository.findAll()));
+            return mapper.toDtos(repository.findAll());
         }
-        return ResponseEntity.badRequest().body("Le departement n'a pas pu étre ajoutée (valeurs invalides)");
+        throw new ExceptionRequeteInvalide("Le departement n'a pas pu étre ajoutée (valeurs invalides)");
     }
 
     /**
@@ -97,16 +95,16 @@ public class DepartementService {
      * @param departement {@link Departement} avec les nouvelles données.
      * @return Liste des {@link Departement} après modification.
      */
-    public ResponseEntity<?> modifierDepartement(int id, @RequestBody Departement departement) throws EntityExistsException {
+    public List<DepartementDto> modifierDepartement(int id, @RequestBody Departement departement) throws ExceptionRequeteInvalide {
         if (valuesAreValid(departement)) {
             Departement departementExist = repository.findByCodeDepartement(departement.getCodeDepartement());
             if (departementExist != null && departementExist.getId() != id) {
-                throw new EntityExistsException("Le département existe déjà");
+                throw new ExceptionRequeteInvalide("Le département existe déjà");
             }
             repository.save(departement);
-            return ResponseEntity.ok().body(mapper.toDtos(repository.findAll()));
+            return mapper.toDtos(repository.findAll());
         }
-        return ResponseEntity.badRequest().body("Le departement n'a pas pu étre modifiée (valeurs invalides)");
+        throw new ExceptionRequeteInvalide("Le departement n'a pas pu étre ajoutée (valeurs invalides)");
     }
 
     /**
@@ -115,13 +113,13 @@ public class DepartementService {
      * @param id ID du departement.
      * @return Liste des {@link Departement} après suppression.
      */
-    public ResponseEntity<?> supprimerDepartement(int id) throws EntityNotFoundException {
+    public List<DepartementDto> supprimerDepartement(int id) throws ExceptionRequeteInvalide {
         Departement departement = repository.findById(id);
         if (departement == null) {
-            throw new EntityNotFoundException("Aucun département correspondant à l'ID n'a été trouvé");
+            throw new ExceptionRequeteInvalide("Aucun département correspondant à l'ID n'a été trouvé");
         }
         repository.deleteById(id);
-        return ResponseEntity.ok().body(mapper.toDtos(repository.findAll()));
+        return mapper.toDtos(repository.findAll());
     }
 
     /**

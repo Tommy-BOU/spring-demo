@@ -4,6 +4,7 @@ import fr.diginamic.spring.demo.beans.Departement;
 import fr.diginamic.spring.demo.beans.Ville;
 import fr.diginamic.spring.demo.dtos.VilleDto;
 import fr.diginamic.spring.demo.dtos.VilleMapper;
+import fr.diginamic.spring.demo.exceptions.ExceptionRequeteInvalide;
 import fr.diginamic.spring.demo.repositories.DepartementRepository;
 import fr.diginamic.spring.demo.repositories.VilleRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -47,12 +48,12 @@ public class VilleService {
      * @param id ID de la {@link Ville}.
      * @return {@link Ville} correspondante.
      */
-    public ResponseEntity<?> extractVille(int id) {
+    public VilleDto extractVille(int id) throws ExceptionRequeteInvalide {
         Ville ville = repository.findById(id);
         if (ville == null) {
-            return ResponseEntity.badRequest().body("Aucune ville ne correspond à l'ID");
+            throw new ExceptionRequeteInvalide("Aucune ville ne correspond à l'ID");
         }
-        return ResponseEntity.ok().body(mapper.toDto(ville));
+        return mapper.toDto(ville);
     }
 
     /**
@@ -60,12 +61,12 @@ public class VilleService {
      * @param nom Le nom à recherché
      * @return Liste de {@link Ville} correspondante.
      */
-    public ResponseEntity<?> extractVillesByNom(String nom) {
+    public List<VilleDto> extractVillesByNom(String nom) throws ExceptionRequeteInvalide {
         List<Ville> villes = repository.findAllByNomStartingWith(nom);
         if (villes.isEmpty()) {
-            return ResponseEntity.badRequest().body("Aucune ville ne correspond au nom");
+            throw new ExceptionRequeteInvalide("Aucune ville ne correspond au nom");
         }
-        return ResponseEntity.ok().body(mapper.toDtos(villes));
+        return mapper.toDtos(villes);
     }
 
     /**
@@ -73,12 +74,12 @@ public class VilleService {
      * @param nbHabitants Le nombre d'habitants minimum
      * @return Liste de {@link Ville} correspondante.
      */
-    public ResponseEntity<?> extractVillesByNbHabitantsGreaterThan(int nbHabitants) {
+    public List<VilleDto> extractVillesByNbHabitantsGreaterThan(int nbHabitants) throws ExceptionRequeteInvalide {
         List<Ville> villes = repository.findByNbHabitantsGreaterThan(nbHabitants);
         if (villes.isEmpty()) {
-            return ResponseEntity.badRequest().body("Aucune ville ne correspond au nom");
+            throw new ExceptionRequeteInvalide("Aucune ville ne correspond au nom");
         }
-        return ResponseEntity.ok().body(mapper.toDtos(villes));
+        return mapper.toDtos(villes);
     }
 
     /**
@@ -87,12 +88,12 @@ public class VilleService {
      * @param max Le nombre d'habitants maximum
      * @return Liste de {@link Ville} correspondante.
      */
-    public ResponseEntity<?> extractVillesByNbHabitantsBetween(int min, int max) {
+    public List<VilleDto> extractVillesByNbHabitantsBetween(int min, int max) throws ExceptionRequeteInvalide {
         List<Ville> villes = repository.findByNbHabitantsBetweenOrderByNbHabitantsDesc(min, max);
         if (villes.isEmpty()) {
-            return ResponseEntity.badRequest().body("Aucune ville ne correspond au nom");
+            throw new ExceptionRequeteInvalide("Aucune ville ne correspond au nom");
         }
-        return ResponseEntity.ok().body(mapper.toDtos(villes));
+        return mapper.toDtos(villes);
     }
 
     /**
@@ -101,12 +102,12 @@ public class VilleService {
      * @param nom Nom de la {@link Ville}.
      * @return {@link Ville} correspondante.
      */
-    public ResponseEntity<?> extractVille(String nom) {
+    public VilleDto extractVille(String nom) throws ExceptionRequeteInvalide {
         Ville ville = repository.findByNom(nom);
         if (ville == null) {
-            return ResponseEntity.badRequest().body("Aucune ville ne correspond au nom");
+            throw new ExceptionRequeteInvalide("Aucune ville ne correspond au nom");
         }
-        return ResponseEntity.ok().body(mapper.toDto(ville));
+        return mapper.toDto(ville);
     }
 
     /**
@@ -115,13 +116,12 @@ public class VilleService {
      * @param id L'id du {@link Departement}
      * @return Liste de {@link VilleDto}.
      */
-    public ResponseEntity<?> extractVillesByDepartement(int id) throws EntityNotFoundException {
+    public List<VilleDto> extractVillesByDepartement(int id) throws EntityNotFoundException {
         Departement departement = repositoryDepartement.findById(id);
         if (departement == null) {
             throw new EntityNotFoundException("Aucun département correspondant à l'ID n'a été trouvé");
-//            return ResponseEntity.badRequest().body("Aucun departement ne correspond à l'ID");
         }
-        return ResponseEntity.ok().body(mapper.toDtos(repository.findByDepartement(departement)));
+        return mapper.toDtos(repository.findByDepartement(departement));
     }
 
     /**
@@ -131,7 +131,7 @@ public class VilleService {
      * @param min La population minimale
      * @return Liste de {@link VilleDto}.
      */
-    public ResponseEntity<?> extractVillesByDepartementAndPopMin(int id, int min) throws EntityNotFoundException{
+    public List<VilleDto> extractVillesByDepartementAndPopMin(int id, int min) throws EntityNotFoundException{
         Departement departement = repositoryDepartement.findById(id);
         if (departement == null) {
             throw new EntityNotFoundException("Aucun département correspondant à l'ID n'a été trouvé");
@@ -143,7 +143,7 @@ public class VilleService {
                 villesDto.add(new VilleDto(ville, true));
             }
         }
-        return ResponseEntity.ok().body(villesDto);
+        return villesDto;
     }
 
     /**
@@ -152,7 +152,7 @@ public class VilleService {
      * @param id L'id du {@link Departement}
      * @return Liste de {@link VilleDto}.
      */
-    public ResponseEntity<?> extractNVillesByDepartement(int id, PageRequest pageRequest) throws EntityNotFoundException {
+    public List<VilleDto> extractNVillesByDepartement(int id, PageRequest pageRequest) throws EntityNotFoundException {
         Departement departement = repositoryDepartement.findById(id);
         if (departement == null) {
             throw new EntityNotFoundException("Aucun département correspondant à l'ID n'a été trouvé");
@@ -164,7 +164,7 @@ public class VilleService {
                 filteredVilles.add(mapper.toDto(v));
             }
         }
-        return ResponseEntity.ok().body(filteredVilles);
+        return filteredVilles;
     }
 
     /**
@@ -175,7 +175,7 @@ public class VilleService {
      * @param popMax La population maximale
      * @return Liste de {@link VilleDto}.
      */
-    public ResponseEntity<?> extractVillesByDepartementAndPopBetween(int id, int popMin, int popMax) throws EntityNotFoundException {
+    public List<VilleDto> extractVillesByDepartementAndPopBetween(int id, int popMin, int popMax) throws EntityNotFoundException {
         Departement departement = repositoryDepartement.findById(id);
         if (departement == null) {
             throw new EntityNotFoundException("Aucun département correspondant à l'ID n'a été trouvé");
@@ -187,7 +187,7 @@ public class VilleService {
                 villesDto.add(new VilleDto(ville, true));
             }
         }
-        return ResponseEntity.ok().body(villesDto);
+        return villesDto;
     }
 
     /**
@@ -196,22 +196,22 @@ public class VilleService {
      * @param ville {@link Ville} à ajouter.
      * @return Liste des {@link Ville} après ajout ou un message d'erreur.
      */
-    public ResponseEntity<?> insertVille(@RequestBody Ville ville) {
+    public List<VilleDto> insertVille(@RequestBody Ville ville) throws ExceptionRequeteInvalide {
         if (valuesAreValid(ville)) {
 //            Ajout du departement selon le code postal de la ville
             Ville villeExistante = repository.findByNom(ville.getNom());
             if (villeExistante != null) {
-                return ResponseEntity.badRequest().body("Une ville portant le mâme nom existe deja");
+                throw new ExceptionRequeteInvalide("Une ville portant le mâme nom existe deja");
             }
             Departement departement = findDepartementFromCode(ville);
             if (departement == null) {
-                return ResponseEntity.badRequest().body("Aucun département ne correspond au code postal de la ville");
+                throw new ExceptionRequeteInvalide("Aucun département ne correspond au code postal de la ville");
             }
             ville.setDepartement(departement);
             repository.save(ville);
-            return ResponseEntity.ok().body(mapper.toDtos(repository.findAll()));
+            return mapper.toDtos(repository.findAll());
         }
-        return ResponseEntity.badRequest().body("La ville n'a pas pu étre ajoutée (valeurs invalides)");
+        throw new ExceptionRequeteInvalide("La ville n'a pas pu étre ajoutée (valeurs invalides)");
     }
 
     /**
@@ -222,7 +222,7 @@ public class VilleService {
      * @return Liste des {@link Ville} après modification ou un message d'erreur.
      */
     @Transactional
-    public ResponseEntity<?> modifierVille(int id, @RequestBody Ville data) {
+    public List<VilleDto> modifierVille(int id, @RequestBody Ville data) throws ExceptionRequeteInvalide {
         if (data.getId() == null) {
             data.setId(id);
         }
@@ -230,17 +230,17 @@ public class VilleService {
 //            Modification du departement selon le code postal de la ville
             Ville villeExistante = repository.findByNom(data.getNom());
             if (villeExistante != null && villeExistante.getId() != id) {
-                return ResponseEntity.badRequest().body("Une ville portant le mâme nom existe deja");
+                throw new ExceptionRequeteInvalide("Une ville portant le même nom existe deja");
             }
             Departement departement = findDepartementFromCode(data);
             if (departement == null) {
-                return ResponseEntity.badRequest().body("Aucun département ne correspond au code postal de la ville");
+                throw new ExceptionRequeteInvalide("Aucun département ne correspond au code postal de la ville");
             }
             data.setDepartement(departement);
             repository.save(data);
-            return ResponseEntity.ok().body(mapper.toDtos(repository.findAll()));
+            return mapper.toDtos(repository.findAll());
         }
-        return ResponseEntity.badRequest().body("La ville n'a pas pu étre modifiée (valeurs invalides)");
+        throw new ExceptionRequeteInvalide("La ville n'a pas pu étre modifiée (valeurs invalides)");
     }
 
     /**
@@ -249,13 +249,13 @@ public class VilleService {
      * @param id ID de la ville.
      * @return Liste des {@link Ville} après suppression.
      */
-    public ResponseEntity<?> supprimerVille(int id) {
+    public List<VilleDto> supprimerVille(int id) throws ExceptionRequeteInvalide {
         Ville ville = repository.findById(id);
         if (ville == null) {
-            return ResponseEntity.badRequest().body("Aucune ville ne correspond à l'ID");
+            throw new ExceptionRequeteInvalide("Aucune ville ne correspond à l'ID");
         }
         repository.deleteById(id);
-        return ResponseEntity.ok().body(mapper.toDtos(repository.findAll()));
+        return mapper.toDtos(repository.findAll());
     }
 
     /**

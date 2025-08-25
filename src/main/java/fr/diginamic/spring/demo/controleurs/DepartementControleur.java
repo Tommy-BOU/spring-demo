@@ -2,6 +2,8 @@ package fr.diginamic.spring.demo.controleurs;
 
 import fr.diginamic.spring.demo.beans.Departement;
 import fr.diginamic.spring.demo.dtos.DepartementDto;
+import fr.diginamic.spring.demo.dtos.VilleDto;
+import fr.diginamic.spring.demo.exceptions.ExceptionRequeteInvalide;
 import fr.diginamic.spring.demo.services.DepartementService;
 import fr.diginamic.spring.demo.services.VilleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,7 @@ public class DepartementControleur {
      * @return Le {@link Departement} ou un message d'erreur
      */
     @GetMapping(path = "/{id}")
-    public ResponseEntity<?> getDepartementById(@PathVariable int id) {
+    public DepartementDto getDepartementById(@PathVariable int id) throws ExceptionRequeteInvalide {
         return service.extractDepartement(id);
     }
 
@@ -55,7 +57,7 @@ public class DepartementControleur {
      * @return Le {@link Departement} ou un message d'erreur
      */
     @GetMapping(path = "/code/{code}")
-    public ResponseEntity<?> getDepartementByCode(@PathVariable String code) {
+    public DepartementDto getDepartementByCode(@PathVariable String code) throws ExceptionRequeteInvalide {
         return service.extractDepartement(code);
     }
 
@@ -66,7 +68,7 @@ public class DepartementControleur {
      * @return Liste des {@link Departement} après insertion
      */
     @PostMapping
-    public ResponseEntity<?> ajouterDepartement(@RequestBody Departement newDepartement) {
+    public List<DepartementDto> ajouterDepartement(@RequestBody Departement newDepartement) throws ExceptionRequeteInvalide {
         return service.insertDepartement(newDepartement);
     }
 
@@ -78,7 +80,7 @@ public class DepartementControleur {
      * @return La liste des {@link Departement} apres modification
      */
     @PutMapping(path = "/{id}")
-    public ResponseEntity<?> modifierDepartement(@PathVariable int id, @RequestBody Departement data) {
+    public List<DepartementDto> modifierDepartement(@PathVariable int id, @RequestBody Departement data) throws ExceptionRequeteInvalide {
 
         return service.modifierDepartement(id, data);
 
@@ -91,7 +93,7 @@ public class DepartementControleur {
      * @return La liste des {@link Departement} apres suppression
      */
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> supprimerDepartement(@PathVariable int id) {
+    public List<DepartementDto> supprimerDepartement(@PathVariable int id) throws ExceptionRequeteInvalide {
         return service.supprimerDepartement(id);
     }
 
@@ -101,7 +103,7 @@ public class DepartementControleur {
      * @return List<VilleDto>
      */
     @GetMapping(path = "/{id}/villes")
-    public ResponseEntity<?> getAllVillesByDepartement(@PathVariable int id) {
+    public List<VilleDto> getAllVillesByDepartement(@PathVariable int id) {
         return villeService.extractVillesByDepartement(id);
     }
 
@@ -112,7 +114,7 @@ public class DepartementControleur {
      * @return List<VilleDto>
      */
     @GetMapping(path = "/{id}/villes/{size}")
-    public ResponseEntity<?> getVillesByDepartement(@PathVariable int id, @PathVariable int size, @RequestParam int page) {
+    public List<VilleDto> getVillesByDepartement(@PathVariable int id, @PathVariable int size, @RequestParam int page) {
         PageRequest pagination = PageRequest.of(page, size);
         return villeService.extractNVillesByDepartement(id, pagination);
     }
@@ -124,7 +126,7 @@ public class DepartementControleur {
      * @return List<VilleDto>
      */
     @GetMapping(path = "/{id}/villes/pop/{popMin}")
-    public ResponseEntity<?> getVillesByDepartementAndPopMin(@PathVariable int id, @PathVariable int popMin) {
+    public List<VilleDto> getVillesByDepartementAndPopMin(@PathVariable int id, @PathVariable int popMin) {
         return villeService.extractVillesByDepartementAndPopMin(id, popMin);
     }
 
@@ -136,7 +138,7 @@ public class DepartementControleur {
      * @return une List<VilleDto>
      */
     @GetMapping(path = "/{id}/villes/pop/{popMin}/{popMax}")
-    public ResponseEntity<?> getVillesByDepartementAndPopBetween(@PathVariable int id, @PathVariable int popMin, @PathVariable int popMax) {
+    public List<VilleDto> getVillesByDepartementAndPopBetween(@PathVariable int id, @PathVariable int popMin, @PathVariable int popMax) {
         return villeService.extractVillesByDepartementAndPopBetween(id, popMin, popMax);
     }
 }
