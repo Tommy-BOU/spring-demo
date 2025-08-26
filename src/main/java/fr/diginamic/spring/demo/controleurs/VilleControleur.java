@@ -16,7 +16,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/villes")
-public class VilleControleur {
+public class VilleControleur implements IVilleControleur {
 
     @Autowired
     private Validator validator;
@@ -24,12 +24,8 @@ public class VilleControleur {
     @Autowired
     private VilleService service;
 
-    /**
-     * Retourne la liste des {@link Ville}
-     *
-     * @return List<Ville>
-     */
     @GetMapping
+    @Override
     public List<VilleDto> getVilles(@RequestParam int page, @RequestParam int size) {
         PageRequest pagination = PageRequest.of(page, size);
         return service.extractVilles(pagination);
@@ -42,6 +38,7 @@ public class VilleControleur {
      * @return La {@link Ville} ou un message d'erreur
      */
     @GetMapping(path = "/name/{nom}/all")
+    @Override
     public List<VilleDto> getAllVilleByName(@PathVariable String nom) throws ExceptionRequeteInvalide {
         return service.extractVillesByNom(nom);
     }
@@ -52,6 +49,7 @@ public class VilleControleur {
      * @return La liste des {@link Ville} ou un message d'erreur
      */
     @GetMapping(path = "/pop/{min}")
+    @Override
     public List<VilleDto> getAllVillesPopGreaterThan(@PathVariable int min) throws ExceptionRequeteInvalide {
         return service.extractVillesByNbHabitantsGreaterThan(min);
     }
@@ -64,6 +62,7 @@ public class VilleControleur {
      * @return La liste des {@link Ville} ou un message d'erreur
      */
     @GetMapping(path = "/pop/{min}/{max}")
+    @Override
     public List<VilleDto> getAllVillesPopBetween(@PathVariable int min, @PathVariable int max) throws ExceptionRequeteInvalide {
         return service.extractVillesByNbHabitantsBetween(min, max);
     }
@@ -75,6 +74,7 @@ public class VilleControleur {
      * @return La {@link Ville} ou un message d'erreur
      */
     @GetMapping(path = "/{id}")
+    @Override
     public VilleDto getVilleById(@PathVariable int id) throws ExceptionRequeteInvalide {
         return service.extractVille(id);
     }
@@ -86,41 +86,25 @@ public class VilleControleur {
      * @return La {@link Ville} ou un message d'erreur
      */
     @GetMapping(path = "/name/{nom}")
+    @Override
     public VilleDto getVilleByName(@PathVariable String nom) throws ExceptionRequeteInvalide {
         return service.extractVille(nom);
     }
 
-
-    /**
-     * Ajoute une ville dans la liste
-     *
-     * @param newVille La ville ajoutée
-     * @return Liste des {@link Ville} après insertion
-     */
     @PostMapping
+    @Override
     public List<VilleDto> ajouterVille(@RequestBody Ville newVille) throws ExceptionRequeteInvalide {
         return service.insertVille(newVille);
     }
 
-    /**
-     * Modifie une {@link Ville} de la liste par son identifiant
-     *
-     * @param id   L'identifiant de la {@link Ville} à modifier
-     * @param data Les nouvelles données de la {@link Ville} sous forme d'instance
-     * @return La liste des {@link Ville} apres modification
-     */
     @PutMapping(path = "/{id}")
+    @Override
     public List<VilleDto> modifierVille(@PathVariable int id, @RequestBody Ville data) throws ExceptionRequeteInvalide {
         return service.modifierVille(id, data);
     }
 
-    /**
-     * Supprime une {@link Ville} de la liste par son identifiant.
-     *
-     * @param id L'identifiant de la {@link Ville} à supprimer
-     * @return La liste des {@link Ville} apres suppression
-     */
     @DeleteMapping(path = "/{id}")
+    @Override
     public List<VilleDto> supprimerVille(@PathVariable int id) throws ExceptionRequeteInvalide {
         return service.supprimerVille(id);
     }

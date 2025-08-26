@@ -1,7 +1,5 @@
 package fr.diginamic.spring.demo.beans;
 
-import fr.diginamic.spring.demo.validationGroups.ModeCreation;
-import fr.diginamic.spring.demo.validationGroups.ModeModification;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

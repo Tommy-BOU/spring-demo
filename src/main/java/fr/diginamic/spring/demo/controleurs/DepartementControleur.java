@@ -18,7 +18,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/departements")
-public class DepartementControleur {
+public class DepartementControleur implements IDepartementControleur {
     @Autowired
     private Validator validator;
 
@@ -26,7 +26,7 @@ public class DepartementControleur {
     private DepartementService service;
 
     @Autowired
-    private VilleService villeService;
+    private VilleService villeServiceImpl;
 
     /**
      * Retourne la liste des {@link Departement}
@@ -34,6 +34,7 @@ public class DepartementControleur {
      * @return List<Departement>
      */
     @GetMapping
+    @Override
     public List<DepartementDto> getDepartements() {
         return service.extractDepartements();
     }
@@ -45,6 +46,7 @@ public class DepartementControleur {
      * @return Le {@link Departement} ou un message d'erreur
      */
     @GetMapping(path = "/{id}")
+    @Override
     public DepartementDto getDepartementById(@PathVariable int id) throws ExceptionRequeteInvalide {
         return service.extractDepartement(id);
     }
@@ -56,6 +58,7 @@ public class DepartementControleur {
      * @return Le {@link Departement} ou un message d'erreur
      */
     @GetMapping(path = "/code/{code}")
+    @Override
     public DepartementDto getDepartementByCode(@PathVariable String code) throws ExceptionRequeteInvalide {
         return service.extractDepartement(code);
     }
@@ -67,6 +70,7 @@ public class DepartementControleur {
      * @return Liste des {@link Departement} après insertion
      */
     @PostMapping
+    @Override
     public List<DepartementDto> ajouterDepartement(@RequestBody Departement newDepartement) throws ExceptionRequeteInvalide {
         return service.insertDepartement(newDepartement);
     }
@@ -79,6 +83,7 @@ public class DepartementControleur {
      * @return La liste des {@link Departement} apres modification
      */
     @PutMapping(path = "/{id}")
+    @Override
     public List<DepartementDto> modifierDepartement(@PathVariable int id, @RequestBody Departement data) throws ExceptionRequeteInvalide {
 
         return service.modifierDepartement(id, data);
@@ -92,6 +97,7 @@ public class DepartementControleur {
      * @return La liste des {@link Departement} apres suppression
      */
     @DeleteMapping(path = "/{id}")
+    @Override
     public List<DepartementDto> supprimerDepartement(@PathVariable int id) throws ExceptionRequeteInvalide {
         return service.supprimerDepartement(id);
     }
@@ -102,8 +108,9 @@ public class DepartementControleur {
      * @return List<VilleDto>
      */
     @GetMapping(path = "/{id}/villes")
+    @Override
     public List<VilleDto> getAllVillesByDepartement(@PathVariable int id) throws ExceptionRequeteInvalide{
-        return villeService.extractVillesByDepartement(id);
+        return villeServiceImpl.extractVillesByDepartement(id);
     }
 
     /**
@@ -113,9 +120,10 @@ public class DepartementControleur {
      * @return List<VilleDto>
      */
     @GetMapping(path = "/{id}/villes/{size}")
+    @Override
     public List<VilleDto> getVillesByDepartement(@PathVariable int id, @PathVariable int size, @RequestParam int page) throws ExceptionRequeteInvalide {
         PageRequest pagination = PageRequest.of(page, size);
-        return villeService.extractNVillesByDepartement(id, pagination);
+        return villeServiceImpl.extractNVillesByDepartement(id, pagination);
     }
 
     /**
@@ -125,8 +133,9 @@ public class DepartementControleur {
      * @return List<VilleDto>
      */
     @GetMapping(path = "/{id}/villes/pop/{popMin}")
+    @Override
     public List<VilleDto> getVillesByDepartementAndPopMin(@PathVariable int id, @PathVariable int popMin) throws ExceptionRequeteInvalide{
-        return villeService.extractVillesByDepartementAndPopMin(id, popMin);
+        return villeServiceImpl.extractVillesByDepartementAndPopMin(id, popMin);
     }
 
     /**
@@ -137,7 +146,8 @@ public class DepartementControleur {
      * @return une List<VilleDto>
      */
     @GetMapping(path = "/{id}/villes/pop/{popMin}/{popMax}")
+    @Override
     public List<VilleDto> getVillesByDepartementAndPopBetween(@PathVariable int id, @PathVariable int popMin, @PathVariable int popMax) throws ExceptionRequeteInvalide{
-        return villeService.extractVillesByDepartementAndPopBetween(id, popMin, popMax);
+        return villeServiceImpl.extractVillesByDepartementAndPopBetween(id, popMin, popMax);
     }
 }
