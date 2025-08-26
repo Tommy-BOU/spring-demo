@@ -1,11 +1,14 @@
 package fr.diginamic.spring.demo.controleurs;
 
+import com.itextpdf.text.DocumentException;
 import fr.diginamic.spring.demo.beans.Departement;
 import fr.diginamic.spring.demo.dtos.DepartementDto;
 import fr.diginamic.spring.demo.dtos.VilleDto;
 import fr.diginamic.spring.demo.exceptions.ExceptionRequeteInvalide;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface IDepartementControleur {
@@ -17,6 +20,9 @@ public interface IDepartementControleur {
 
     @GetMapping(path = "/code/{code}")
     DepartementDto getDepartementByCode(@PathVariable String code) throws ExceptionRequeteInvalide;
+
+    @GetMapping(path = "/import/{code}")
+    void getDepartementPDFByCode(@PathVariable String code, HttpServletResponse response) throws ExceptionRequeteInvalide, IOException, DocumentException;
 
     @PostMapping
     List<DepartementDto> ajouterDepartement(@RequestBody Departement newDepartement) throws ExceptionRequeteInvalide;

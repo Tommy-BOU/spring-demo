@@ -1,16 +1,21 @@
 package fr.diginamic.spring.demo.controleurs;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfWriter;
 import fr.diginamic.spring.demo.beans.Departement;
 import fr.diginamic.spring.demo.dtos.DepartementDto;
 import fr.diginamic.spring.demo.dtos.VilleDto;
 import fr.diginamic.spring.demo.exceptions.ExceptionRequeteInvalide;
 import fr.diginamic.spring.demo.services.DepartementService;
 import fr.diginamic.spring.demo.services.VilleService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -61,6 +66,38 @@ public class DepartementControleur implements IDepartementControleur {
     @Override
     public DepartementDto getDepartementByCode(@PathVariable String code) throws ExceptionRequeteInvalide {
         return service.extractDepartement(code);
+    }
+
+    @GetMapping(path = "/import/{code}")
+    @Override
+    public void getDepartementPDFByCode(@PathVariable String code, HttpServletResponse response) throws ExceptionRequeteInvalide, IOException, DocumentException {
+        DepartementDto departementDto = service.extractDepartement(code);
+        List<VilleDto> villes = departementDto.getVilles();
+        String title = "Departement " + departementDto.getCodeDepartement();
+        response.setHeader("Content-Disposition", "attachment;filename=\"" + title + ".pdf\"");
+        Document document = new Document(PageSize.A4);
+        PdfWriter.getInstance(document, response.getOutputStream());
+
+        document.open();
+        document.addTitle("Fiche du département " + title);
+        document.newPage();
+        BaseFont baseFont = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.NOT_EMBEDDED);
+
+        Phrase p1 = new Phrase(title +"\n", new Font(baseFont, 16, Font.BOLD));
+        document.add(p1);
+        Phrase p2 = new Phrase("Liste des villes :\n");
+        document.add(p2);
+
+        for (VilleDto ville : villes){
+            Paragraph p = new Paragraph();
+            String line = ville.getNom() + " - " + ville.getNbHabitants() + " habitants\n";
+            Phrase ph = new Phrase(line, new Font(baseFont, 12, Font.BOLD));
+            p.add(ph);
+            document.add(p);
+        }
+
+        document.close();
+        response.flushBuffer();
     }
 
     /**

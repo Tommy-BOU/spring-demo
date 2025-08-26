@@ -1,5 +1,6 @@
 package fr.diginamic.spring.demo.controleurs;
 
+import com.itextpdf.text.DocumentException;
 import fr.diginamic.spring.demo.beans.Ville;
 import fr.diginamic.spring.demo.dtos.DepartementDto;
 import fr.diginamic.spring.demo.dtos.VilleDto;
@@ -10,8 +11,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface IVilleControleur {
@@ -41,6 +44,18 @@ public interface IVilleControleur {
 
     @GetMapping(path = "/{id}")
     VilleDto getVilleById(@PathVariable int id) throws ExceptionRequeteInvalide;
+
+    /**
+     * Renvoie une liste de villes dont la population est supÃrieure Ã  {@code min} sous forme de fichier CSV.
+     *
+     * @param min La population minimale
+     * @param response La rÃponse HTTP
+     * @throws IOException Si une erreur se produit lors de l'envoi du fichier
+     * @throws DocumentException Si une erreur se produit lors de la crÃation du document
+     * @throws ExceptionRequeteInvalide Si la requete est invalide
+     */
+    @GetMapping(path = "/pop/{min}/import")
+    void getVillePDFById(@PathVariable int min, HttpServletResponse response) throws IOException, DocumentException, ExceptionRequeteInvalide;
 
     @GetMapping(path = "/name/{nom}")
     VilleDto getVilleByName(@PathVariable String nom) throws ExceptionRequeteInvalide;

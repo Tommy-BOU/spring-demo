@@ -1,14 +1,19 @@
 package fr.diginamic.spring.demo.controleurs;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.BaseFont;
 import fr.diginamic.spring.demo.beans.Ville;
 import fr.diginamic.spring.demo.dtos.VilleDto;
 import fr.diginamic.spring.demo.exceptions.ExceptionRequeteInvalide;
 import fr.diginamic.spring.demo.services.VilleService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.validation.*;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -45,6 +50,7 @@ public class VilleControleur implements IVilleControleur {
 
     /**
      * Retourne la liste des villes dont la population est supÃrieure Ã  {@code min}
+     *
      * @param min La population minimale
      * @return La liste des {@link Ville} ou un message d'erreur
      */
@@ -57,6 +63,7 @@ public class VilleControleur implements IVilleControleur {
 
     /**
      * Retourne la liste des villes dont la population est comprise entre {@code min} et {@code max}
+     *
      * @param min La population minimale
      * @param max La population maximale
      * @return La liste des {@link Ville} ou un message d'erreur
@@ -77,6 +84,19 @@ public class VilleControleur implements IVilleControleur {
     @Override
     public VilleDto getVilleById(@PathVariable int id) throws ExceptionRequeteInvalide {
         return service.extractVille(id);
+    }
+
+    @GetMapping(path = "pop/{min}/import")
+    @Override
+    public void getVillePDFById(@PathVariable int min, HttpServletResponse response) throws IOException, DocumentException, ExceptionRequeteInvalide {
+        response.setHeader("Content-Disposition", "attachment; filename=\"villes.csv\"");
+        List<VilleDto> villes = service.extractVillesByNbHabitantsGreaterThan(min);
+
+        for (VilleDto ville : villes){
+            String line = ville.getNom()+";"+ville.getNbHabitants()+";"+ville.getDepartement().getCodeDepartement()+";"+ville.getDepartement().getNom()+"\n";
+            response.getWriter().append(line);
+        }
+        response.flushBuffer();
     }
 
     /**
