@@ -3,6 +3,7 @@ package fr.diginamic.spring.demo.beans;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 
 import java.util.Objects;
@@ -26,6 +27,7 @@ public class Ville {
     private String codePostal;
 
     @ManyToOne
+    @Null
     @JoinColumn(name="id_departement")
     private Departement departement;
 

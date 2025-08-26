@@ -1,11 +1,16 @@
 package fr.diginamic.spring.demo.beans;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import jakarta.persistence.*;
 
 import java.util.List;
 import java.util.Objects;
 
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Departement {
 
     @Id
@@ -17,7 +22,7 @@ public class Departement {
     @Column(name = "code_departement")
     private String codeDepartement;
 
-    @OneToMany(mappedBy = "departement")
+    @OneToMany(mappedBy = "departement", fetch = FetchType.EAGER)
     private List<Ville> villes;
 
     public Departement() {

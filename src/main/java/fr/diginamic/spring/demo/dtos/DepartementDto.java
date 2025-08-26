@@ -1,5 +1,8 @@
 package fr.diginamic.spring.demo.dtos;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import fr.diginamic.spring.demo.beans.Departement;
 import fr.diginamic.spring.demo.beans.Ville;
 
@@ -9,6 +12,7 @@ import java.util.List;
 public class DepartementDto {
     private int id;
     private String nom;
+    @JsonProperty("code")
     private String codeDepartement;
     private List<VilleDto> villes;
 
@@ -61,10 +65,12 @@ public class DepartementDto {
         this.nom = nom;
     }
 
+    @JsonGetter
     public String getCodeDepartement() {
         return codeDepartement;
     }
 
+    @JsonSetter
     public void setCodeDepartement(String codeDepartement) {
         this.codeDepartement = codeDepartement;
     }
