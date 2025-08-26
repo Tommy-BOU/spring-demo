@@ -8,7 +8,6 @@ import fr.diginamic.spring.demo.services.DepartementService;
 import fr.diginamic.spring.demo.services.VilleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.*;
 
@@ -103,7 +102,7 @@ public class DepartementControleur {
      * @return List<VilleDto>
      */
     @GetMapping(path = "/{id}/villes")
-    public List<VilleDto> getAllVillesByDepartement(@PathVariable int id) {
+    public List<VilleDto> getAllVillesByDepartement(@PathVariable int id) throws ExceptionRequeteInvalide{
         return villeService.extractVillesByDepartement(id);
     }
 
@@ -114,7 +113,7 @@ public class DepartementControleur {
      * @return List<VilleDto>
      */
     @GetMapping(path = "/{id}/villes/{size}")
-    public List<VilleDto> getVillesByDepartement(@PathVariable int id, @PathVariable int size, @RequestParam int page) {
+    public List<VilleDto> getVillesByDepartement(@PathVariable int id, @PathVariable int size, @RequestParam int page) throws ExceptionRequeteInvalide {
         PageRequest pagination = PageRequest.of(page, size);
         return villeService.extractNVillesByDepartement(id, pagination);
     }
@@ -126,7 +125,7 @@ public class DepartementControleur {
      * @return List<VilleDto>
      */
     @GetMapping(path = "/{id}/villes/pop/{popMin}")
-    public List<VilleDto> getVillesByDepartementAndPopMin(@PathVariable int id, @PathVariable int popMin) {
+    public List<VilleDto> getVillesByDepartementAndPopMin(@PathVariable int id, @PathVariable int popMin) throws ExceptionRequeteInvalide{
         return villeService.extractVillesByDepartementAndPopMin(id, popMin);
     }
 
@@ -138,7 +137,7 @@ public class DepartementControleur {
      * @return une List<VilleDto>
      */
     @GetMapping(path = "/{id}/villes/pop/{popMin}/{popMax}")
-    public List<VilleDto> getVillesByDepartementAndPopBetween(@PathVariable int id, @PathVariable int popMin, @PathVariable int popMax) {
+    public List<VilleDto> getVillesByDepartementAndPopBetween(@PathVariable int id, @PathVariable int popMin, @PathVariable int popMax) throws ExceptionRequeteInvalide{
         return villeService.extractVillesByDepartementAndPopBetween(id, popMin, popMax);
     }
 }

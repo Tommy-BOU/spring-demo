@@ -7,7 +7,6 @@ import fr.diginamic.spring.demo.services.VilleService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.*;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;

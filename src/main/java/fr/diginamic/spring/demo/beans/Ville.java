@@ -14,19 +14,16 @@ public class Ville {
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    @Min(value=1, message="L'id de la ville doit etre superieur ou égal a 1", groups=ModeModification.class)
     private Integer id;
 
-    @NotNull
-    @Size(min=2, message="Le nom de la ville doit avoir au moins 2 caractères", groups={ModeModification.class, ModeCreation.class})
+    @Size(min=2, message="Le nom de la ville doit avoir au moins 2 caractères")
     private String nom;
 
     @Column(name="nb_habitants")
-    @Min(value=1, message="Le nombre d'habitants doit etre superieur ou egal a 1", groups={ModeModification.class, ModeCreation.class})
+    @Min(value=1, message="Le nombre d'habitants doit etre superieur ou égal a 1")
     private Integer nbHabitants;
 
-    @NotNull
-    @Size(min=5, max=5, message="Le code postal doit avoir 5 chiffres", groups={ModeModification.class, ModeCreation.class})
+    @Size(min=5, max=5, message="Le code postal doit avoir 5 chiffres")
     @Column(name="code_postal")
     private String codePostal;
 
